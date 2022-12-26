@@ -48,13 +48,13 @@ namespace EscortsReady
             // Init the bot first
             try
             {
-                _token = Utils.MKToken();
+                _token = Program.Configuration.GetValue<string>("Discord:Token");
                 if (string.IsNullOrEmpty(_token))
                 {
                     Logger.LogWarning("Please provide a discord bot token before continuing. this can be done in the data.json file.");
                     Logger.LogInformation("What is your discord Bot Token? Token:");
                     _token = Console.ReadLine();
-                    Environment.SetEnvironmentVariable("DTOKEN", _token);
+                    Environment.SetEnvironmentVariable("Discord:Token", _token);
 
                     if (checkTokenCount > 3) return;
                     else
@@ -63,18 +63,18 @@ namespace EscortsReady
                         goto retry;
                     }
                 }
-                _vrcusername = Program.Configuration.GetValue<string>("VRCU");
-                _vrcpassword = Program.Configuration.GetValue<string>("VRCP");
+                _vrcusername = Program.Configuration.GetValue<string>("VRChat:Username");
+                _vrcpassword = Program.Configuration.GetValue<string>("VRChat:Password");
                 if (string.IsNullOrEmpty(_vrcusername) || string.IsNullOrEmpty(_vrcpassword))
                 {
                     Logger.LogWarning("Please provide a VRChat username and password before continuing. this can be done in the data.json file.");
                     Logger.LogInformation("What is your VRCUsername? Username:");
 
                     _vrcusername = Console.ReadLine();
-                    Environment.SetEnvironmentVariable("VRCU", _vrcusername);
+                    Environment.SetEnvironmentVariable("VRChat:Username", _vrcusername);
                     Console.Write("What is your VRCPassword? Password:");
                     _vrcpassword = Console.ReadLine();
-                    Environment.SetEnvironmentVariable("VRCP", _vrcpassword);
+                    Environment.SetEnvironmentVariable("VRChat:Password", _vrcpassword);
 
                     if (checkVRCCred > 3) return;
                     else

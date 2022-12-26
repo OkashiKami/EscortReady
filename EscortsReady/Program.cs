@@ -19,7 +19,6 @@ namespace EscortsReady
         public static ConfigurationManager Configuration { get; private set; }
         private static WebApplication app;
         public static ILogger logger { get; private set; }
-        private static IConfigurationRoot c2;
 
         public static async Task Main(params string[] args)
         {
@@ -121,8 +120,8 @@ namespace EscortsReady
             }
 
             // Retrieve the connection string
-            var appConfigConnectionString = builder.Configuration.GetConnectionString("AppConfig");
-            var storageConnectionString = builder.Configuration.GetConnectionString("StorageConfig");
+            var appConfigConnectionString = builder.Configuration.GetValue<string>("EscortReadyAppConfig");
+            var storageConnectionString = builder.Configuration.GetValue<string>("EscortReadyStorageConnectionString");
             // Load configuration from Azure App Configuration
             builder.Configuration.AddAzureAppConfiguration(appConfigConnectionString);
             await Storage.Setup(storageConnectionString);

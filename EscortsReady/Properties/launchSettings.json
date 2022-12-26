@@ -7,7 +7,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "VaultUri": "https://escortsreadyvault.vault.azure.net/",
         "AZURE_USERNAME": "zbigmoney305@gmail.com",
-        "EscortReadyVaultUri": "https://escortsreadyvault.vault.azure.net/"
+        "EscortReadyVaultUri": "https://okashitechvault.vault.azure.net/",
+        "EscortReadyVault": "https://okashitechvault.vault.azure.net/"
       }
     },
     "EscortsReady": {
@@ -17,7 +18,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "VaultUri": "https://escortsreadyvault.vault.azure.net/",
         "AZURE_USERNAME": "zbigmoney305@gmail.com",
-        "EscortReadyVaultUri": "https://escortsreadyvault.vault.azure.net/"
+        "EscortReadyVaultUri": "https://okashitechvault.vault.azure.net/",
+        "EscortReadyVault": "https://okashitechvault.vault.azure.net/"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7071;http://localhost:5071"

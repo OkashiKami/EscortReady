@@ -312,13 +312,5 @@ namespace EscortsReady
             }
             return bmp;
         }
-        public static string? MKToken()
-        {
-            var sb = new StringBuilder();
-            sb.Append($"{Program.Configuration.GetValue<string>("DTOKEN1")}.");
-            sb.Append($"{Program.Configuration.GetValue<string>("DTOKEN2")}.");
-            sb.Append($"{Program.Configuration.GetValue<string>("DTOKEN3")}");
-            return sb.ToString();
-        }
     }
 }

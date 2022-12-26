@@ -1,3 +1,28 @@
 {
-  "dependencies": {}
+  "dependencies": {
+    "appConfig1": {
+      "secretStore": "LocalSecretsFile",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.AppConfiguration/configurationStores/okashitechappconfig",
+      "type": "appConfig.azure",
+      "connectionId": "EscortReadyAppConfig"
+    },
+    "secrets2": {
+      "secretStore": null,
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/OkashiTechVault",
+      "type": "secrets.keyVault",
+      "connectionId": "EscortReadyVault",
+      "dynamicId": null
+    },
+    "secrets1": {
+      "type": "secrets.user",
+      "connectionId": "EscortReadyVaultUri",
+      "dynamicId": null
+    },
+    "storage1": {
+      "secretStore": "LocalSecretsFile",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/okashitechstorage",
+      "type": "storage.azure",
+      "connectionId": "EscortReadyStorageConnectionString"
+    }
+  }
 }

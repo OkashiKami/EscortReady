@@ -1,0 +1,34 @@
+{
+  "dependencies": {
+    "appConfig1": {
+      "restored": true,
+      "restoreTime": "2022-12-26T17:37:27.5208996Z"
+    },
+    "secrets1": {
+      "restored": true,
+      "restoreTime": "2022-12-26T17:37:25.5646932Z"
+    }
+  },
+  "parameters": {
+    "appConfig1.subscriptionId": {
+      "Name": "appConfig1.subscriptionId",
+      "Type": "subscription",
+      "Value": "e3aace0c-1c96-457c-952a-d17493236d56"
+    },
+    "secrets1.resourceGroupName": {
+      "Name": "secrets1.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "PermissionEx20221021213510ResourceGroup"
+    },
+    "secrets1.subscriptionId": {
+      "Name": "secrets1.subscriptionId",
+      "Type": "subscription",
+      "Value": "e3aace0c-1c96-457c-952a-d17493236d56"
+    },
+    "appConfig1.resourceGroupName": {
+      "Name": "appConfig1.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "permissionex20221021213510resourcegroup"
+    }
+  }
+}

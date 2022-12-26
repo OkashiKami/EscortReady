@@ -1,0 +1,48 @@
+{
+  "dependencies": {
+    "secrets2": {
+      "restored": true,
+      "restoreTime": "2022-12-26T17:54:26.2724502Z"
+    },
+    "apis1": {
+      "restored": true,
+      "restoreTime": "2022-12-26T17:46:48.5869432Z"
+    },
+    "appConfig2": {
+      "restored": true,
+      "restoreTime": "2022-12-26T17:55:04.7074643Z"
+    }
+  },
+  "parameters": {
+    "appConfig2.subscriptionId": {
+      "Name": "appConfig2.subscriptionId",
+      "Type": "subscription",
+      "Value": "e3aace0c-1c96-457c-952a-d17493236d56"
+    },
+    "secrets2.resourceGroupName": {
+      "Name": "secrets2.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "PermissionEx20221021213510ResourceGroup"
+    },
+    "secrets2.subscriptionId": {
+      "Name": "secrets2.subscriptionId",
+      "Type": "subscription",
+      "Value": "e3aace0c-1c96-457c-952a-d17493236d56"
+    },
+    "appConfig2.resourceGroupName": {
+      "Name": "appConfig2.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "permissionex20221021213510resourcegroup"
+    },
+    "apis1.resourceGroupName": {
+      "Name": "apis1.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "PermissionEx20221021213510ResourceGroup"
+    },
+    "apis1.subscriptionId": {
+      "Name": "apis1.subscriptionId",
+      "Type": "subscription",
+      "Value": "e3aace0c-1c96-457c-952a-d17493236d56"
+    }
+  }
+}

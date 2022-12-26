@@ -190,7 +190,7 @@ namespace EscortsReady
                 
 
                 var guildid = ulong.Parse(guidid);
-                var guild = e.Guild != null ? e.Guild : DiscordService.client.Guilds[guildid];
+                var guild = e.Guild != null ? e.Guild : DiscordService.Client.Guilds[guildid];
 
 
                 var settings = await Settings.LoadAsync(guild);

@@ -53,45 +53,93 @@
               "target": "Package",
               "version": "[1.6.0, )"
             },
+            "Azure.Storage.Blobs": {
+              "target": "Package",
+              "version": "[12.3.0, )"
+            },
+            "Azure.Storage.Files.Shares": {
+              "target": "Package",
+              "version": "[12.1.0, )"
+            },
+            "Azure.Storage.Queues": {
+              "target": "Package",
+              "version": "[12.2.0, )"
+            },
             "DSharpPlus": {
               "target": "Package",
-              "version": "[4.3.0, )"
+              "version": "[4.3.0-nightly-01175, )"
             },
             "DSharpPlus.CommandsNext": {
               "target": "Package",
-              "version": "[4.3.0, )"
+              "version": "[4.3.0-nightly-01175, )"
             },
             "DSharpPlus.Interactivity": {
               "target": "Package",
-              "version": "[4.3.0, )"
-            },
-            "DSharpPlus.Menus": {
-              "target": "Package",
-              "version": "[1.0.3.5, )"
+              "version": "[4.3.0-nightly-01175, )"
             },
             "DSharpPlus.SlashCommands": {
               "target": "Package",
-              "version": "[4.3.0, )"
+              "version": "[4.3.0-nightly-01175, )"
             },
-            "DSharpPlus.VoiceNext": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
-              "version": "[4.3.0, )"
+              "version": "[6.0.10, )"
+            },
+            "Microsoft.AspNetCore.Authentication.OpenIdConnect": {
+              "target": "Package",
+              "version": "[6.0.5, )"
+            },
+            "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation": {
+              "target": "Package",
+              "version": "[6.0.10, )"
             },
             "Microsoft.Azure.AppConfiguration.AspNetCore": {
               "target": "Package",
-              "version": "[5.0.0, )"
+              "version": "[5.1.0, )"
             },
-            "Swashbuckle.AspNetCore": {
+            "Microsoft.Azure.KeyVault": {
               "target": "Package",
-              "version": "[6.2.3, )"
+              "version": "[3.0.5, )"
+            },
+            "Microsoft.Azure.Services.AppAuthentication": {
+              "target": "Package",
+              "version": "[1.6.2, )"
+            },
+            "Microsoft.Extensions.Azure": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.CommandLine": {
+              "target": "Package",
+              "version": "[7.0.0-rc.2.22472.3, )"
+            },
+            "Microsoft.Extensions.Configuration.EnvironmentVariables": {
+              "target": "Package",
+              "version": "[7.0.0-rc.2.22472.3, )"
+            },
+            "Microsoft.Identity.Web": {
+              "target": "Package",
+              "version": "[1.24.1, )"
+            },
+            "Microsoft.Identity.Web.MicrosoftGraph": {
+              "target": "Package",
+              "version": "[1.24.1, )"
+            },
+            "Microsoft.Identity.Web.UI": {
+              "target": "Package",
+              "version": "[1.16.0, )"
             },
             "System.Drawing.Common": {
               "target": "Package",
-              "version": "[7.0.0, )"
+              "version": "[7.0.0-rc.2.22472.3, )"
             },
-            "WeTransfer.NET": {
+            "VRChat.API": {
               "target": "Package",
-              "version": "[1.0.0, )"
+              "version": "[1.7.7, )"
+            },
+            "VRChat.API.Client": {
+              "target": "Package",
+              "version": "[1.1.1, )"
             }
           },
           "imports": [

@@ -1,17 +1,26 @@
 {
   "dependencies": {
     "secrets1": {
+      "type": "secrets.user"
+    },
+    "secrets2": {
       "secretStore": null,
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/EscortsReadyvault",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/PermissionExvault",
       "type": "secrets.keyVault",
-      "connectionId": "VaultUri"
+      "connectionId": "VaultUri",
+      "dynamicId": null
     },
     "appConfig1": {
       "secretStore": "AzureKeyVault",
       "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.AppConfiguration/configurationStores/permissionexconfig",
       "type": "appConfig.azure",
-      "connectionId": "ReadyEscortAppConfig",
-      "dynamicId": null
+      "connectionId": "AppConfig"
+    },
+    "storage1": {
+      "secretStore": "LocalSecretsFile",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/permissionexstorage",
+      "type": "storage.azure",
+      "connectionId": "ConnectionStrings:StorageConfig"
     }
   }
 }

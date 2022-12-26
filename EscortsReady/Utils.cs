@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
+using System.Text;
 using System.Threading.Channels;
 
 namespace EscortsReady
@@ -103,7 +104,7 @@ namespace EscortsReady
         private static async Task<string> PostImageToTmpServer(string originalFile)
         {
             ulong tid = 946818290003623986;
-            var tmpServer = await DiscordService.client.GetGuildAsync(tid);
+            var tmpServer = await DiscordService.Client.GetGuildAsync(tid);
             var tmpChannel = tmpServer.Channels.First(x => x.Value.Type == DSharpPlus.ChannelType.Text).Value;
             DiscordMessage msg;
             using(var fs = new FileStream(originalFile, FileMode.Open, FileAccess.Read))
@@ -111,7 +112,7 @@ namespace EscortsReady
                 msg = await tmpChannel.SendMessageAsync("** **");
                 await msg.ModifyAsync(x =>
                 {
-                    x.AddFile(fs, true);
+                    x.WithFile(fs, true);
                 });
             }
             msg = await tmpChannel.GetMessageAsync(msg.Id, true);
@@ -129,8 +130,8 @@ namespace EscortsReady
                 await ctx.EditResponseAsync(dwb);
             }
 
-            var creator = await DiscordService.client.GetUserAsync(devid);
-            DiscordService.client.Guilds.ToList().ForEach(async x => await x.Value.Members.ToList().Find(x => x.Key == devid).Value.SendMessageAsync($"[EscortsReady]\n{ex}"));
+            var creator = await DiscordService.Client.GetUserAsync(devid);
+            DiscordService.Client.Guilds.ToList().ForEach(async x => await x.Value.Members.ToList().Find(x => x.Key == devid).Value.SendMessageAsync($"[EscortsReady]\n{ex}"));
         }
 
         public static Rank CalculateRangking(Profile profile)
@@ -150,7 +151,7 @@ namespace EscortsReady
         }
         public static async Task<DiscordMember> GetMemberAsync(Profile profile)
         {
-            var server = await DiscordService.client.GetGuildAsync(profile.serverID);
+            var server = await DiscordService.Client.GetGuildAsync(profile.serverID);
             var member = server.Members[profile.memberID];
             return member;
         }
@@ -161,7 +162,7 @@ namespace EscortsReady
         }
         public static async Task<DiscordChannel> GetChannelAsync(Profile profile)
         {
-            var server = await DiscordService.client.GetGuildAsync(profile.serverID);
+            var server = await DiscordService.Client.GetGuildAsync(profile.serverID);
             var channel = server.Channels[profile.channelID];
             return channel;
         }
@@ -177,7 +178,7 @@ namespace EscortsReady
         }
         public static async Task<DiscordMessage> GetMessageAsync(Profile profile)
         {
-            var server = await DiscordService.client.GetGuildAsync(profile.serverID);
+            var server = await DiscordService.Client.GetGuildAsync(profile.serverID);
             var channel = server.Channels[profile.channelID];
             DiscordMessage message = null;
             try { message = await channel.GetMessageAsync(profile.messageID); } catch { }
@@ -211,6 +212,15 @@ namespace EscortsReady
                     profileContainer.Remove(key);
             }
             await EscortProfile.SaveAsync(guild, profileContainer);
+        }
+
+        public static string? MKToken()
+        {
+            var sb = new StringBuilder();
+            sb.Append($"{Program.Configuration.GetValue<string>("DTOKEN1")}.");
+            sb.Append($"{Program.Configuration.GetValue<string>("DTOKEN2")}.");
+            sb.Append($"{Program.Configuration.GetValue<string>("DTOKEN3")}");
+            return sb.ToString();
         }
     }
 }

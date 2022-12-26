@@ -1,26 +1,20 @@
 {
   "dependencies": {
     "secrets1": {
-      "type": "secrets",
-      "connectionId": "VaultUri"
-    },
-    "appConfig1": {
-      "type": "appConfig",
-      "connectionId": "ReadyEscortAppConfig",
-      "dynamicId": null
-    },
-    "apis1": {
-      "type": "apis"
+      "type": "secrets"
     },
     "secrets2": {
       "type": "secrets",
       "connectionId": "VaultUri",
       "dynamicId": null
     },
-    "appConfig2": {
+    "appConfig1": {
       "type": "appConfig",
-      "connectionId": "EscortReadyAppConfig",
-      "dynamicId": null
+      "connectionId": "AppConfig"
+    },
+    "storage1": {
+      "type": "storage",
+      "connectionId": "ConnectionStrings:StorageConfig"
     }
   }
 }

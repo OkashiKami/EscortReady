@@ -1,32 +1,99 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>4e5bd599-40db-4784-88db-30534a9390ca</UserSecretsId>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="bin\Debug\net6.0\Resources\Data\**" />
-    <Content Remove="bin\Debug\net6.0\Resources\Data\**" />
-    <EmbeddedResource Remove="bin\Debug\net6.0\Resources\Data\**" />
-    <None Remove="bin\Debug\net6.0\Resources\Data\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Resources\**" />
+		<Content Remove="Resources\**" />
+		<EmbeddedResource Remove="Resources\**" />
+		<None Remove="Resources\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.0.0" />
-    <PackageReference Include="Azure.Identity" Version="1.6.0" />
-    <PackageReference Include="DSharpPlus" Version="4.3.0" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.3.0" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.3.0" />
-    <PackageReference Include="DSharpPlus.Menus" Version="1.0.3.5" />
-    <PackageReference Include="DSharpPlus.SlashCommands" Version="4.3.0" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="5.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
-    <PackageReference Include="WeTransfer.NET" Version="1.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Remove="Views\Home\Dashboard.cshtml" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="Views\Home\Dashboard.cshtml" />
+		<None Include="Views\Home\Index.cshtml" />
+		<None Include="Views\Home\Privacy.cshtml" />
+		<None Include="Views\Shared\Error.cshtml" />
+		<None Include="Views\Shared\_Layout.cshtml" />
+		<None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
+		<None Include="Views\_ViewImports.cshtml" />
+		<None Include="Views\_ViewStart.cshtml" />
+		<None Include="wwwroot\js\site.js" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js" />
+		<None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js" />
+		<None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js" />
+		<None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js" />
+		<None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.js" />
+		<None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.js.map" />
+		<None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.min.js" />
+		<None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map" />
+		<None Include="wwwroot\lib\bootstrap\LICENSE" />
+		<None Include="wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js" />
+		<None Include="wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js" />
+		<None Include="wwwroot\lib\jquery-validation\dist\additional-methods.js" />
+		<None Include="wwwroot\lib\jquery-validation\dist\additional-methods.min.js" />
+		<None Include="wwwroot\lib\jquery-validation\dist\jquery.validate.js" />
+		<None Include="wwwroot\lib\jquery-validation\dist\jquery.validate.min.js" />
+		<None Include="wwwroot\lib\jquery-validation\LICENSE.md" />
+		<None Include="wwwroot\lib\jquery\dist\jquery.js" />
+		<None Include="wwwroot\lib\jquery\dist\jquery.min.js" />
+		<None Include="wwwroot\lib\jquery\dist\jquery.min.map" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.0.0" />
+		<PackageReference Include="Azure.Identity" Version="1.6.0" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.3.0" />
+		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.1.0" />
+		<PackageReference Include="Azure.Storage.Queues" Version="12.2.0" />
+		<PackageReference Include="DSharpPlus" Version="4.3.0-nightly-01175" />
+		<PackageReference Include="DSharpPlus.CommandsNext" Version="4.3.0-nightly-01175" />
+		<PackageReference Include="DSharpPlus.Interactivity" Version="4.3.0-nightly-01175" />
+		<PackageReference Include="DSharpPlus.SlashCommands" Version="4.3.0-nightly-01175" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.10" />
+		<PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="5.1.0" />
+		<PackageReference Include="Microsoft.Azure.KeyVault" Version="3.0.5" />
+		<PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
+		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="7.0.0-rc.2.22472.3" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0-rc.2.22472.3" />
+		<PackageReference Include="Microsoft.Identity.Web" Version="1.24.1" />
+		<PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.24.1" />
+		<PackageReference Include="Microsoft.Identity.Web.UI" Version="1.16.0" />
+		<PackageReference Include="System.Drawing.Common" Version="7.0.0-rc.2.22472.3" />
+		<PackageReference Include="VRChat.API" Version="1.7.7" />
+		<PackageReference Include="VRChat.API.Client" Version="1.1.1" />
+	</ItemGroup>
 
   <ItemGroup>
     <None Update="Resources\Exports\Escorts.png">

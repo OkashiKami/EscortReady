@@ -1,33 +1,32 @@
 {
   "profiles": {
-    "EscortsReady": {
-      "commandName": "Project",
-      "launchUrl": "swagger",
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "VaultUri": "https://escortsreadyvault.vault.azure.net/",
+        "VaultUri": "https://permissionexvault.vault.azure.net/",
+        "AZURE_USERNAME": "zbigmoney305@gmail.com"
+      }
+    },
+    "PermissionEx": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "VaultUri": "https://permissionexvault.vault.azure.net/",
         "AZURE_USERNAME": "zbigmoney305@gmail.com"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7111;http://localhost:5111"
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchUrl": "swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "VaultUri": "https://escortsreadyvault.vault.azure.net/",
-        "AZURE_USERNAME": "zbigmoney305@gmail.com"
-      }
+      "applicationUrl": "https://localhost:7071;http://localhost:5071"
     }
   },
-  "$schema": "https://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:24985",
-      "sslPort": 44336
+      "applicationUrl": "http://localhost:16340",
+      "sslPort": 44323
     }
   }
 }

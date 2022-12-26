@@ -4,7 +4,7 @@
   "parameters": {
     "resourceGroupName": {
       "type": "string",
-      "defaultValue": "permissionex20221021213510resourcegroup",
+      "defaultValue": "OkashiTech",
       "metadata": {
         "_parameterType": "resourceGroup",
         "description": "Name of the resource group for the resource. It is recommended to put resources under same resource group for better tracking."
@@ -36,7 +36,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat(parameters('resourceGroupName'), 'Deployment', uniqueString(concat('permissionexconfig', subscription().subscriptionId)))]",
+      "name": "[concat(parameters('resourceGroupName'), 'Deployment', uniqueString(concat('okashitechstorage', subscription().subscriptionId)))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "apiVersion": "2019-10-01",
       "dependsOn": [
@@ -49,14 +49,15 @@
           "contentVersion": "1.0.0.0",
           "resources": [
             {
-              "type": "Microsoft.AppConfiguration/configurationStores",
-              "location": "[parameters('resourceLocation')]",
-              "properties": {},
               "sku": {
-                "name": "free"
+                "name": "Standard_LRS",
+                "tier": "Standard"
               },
-              "name": "PermissionExConfig",
-              "apiVersion": "2020-06-01"
+              "kind": "Storage",
+              "name": "okashitechstorage",
+              "type": "Microsoft.Storage/storageAccounts",
+              "location": "[parameters('resourceLocation')]",
+              "apiVersion": "2017-10-01"
             }
           ]
         }
@@ -64,6 +65,6 @@
     }
   ],
   "metadata": {
-    "_dependencyType": "appConfig.azure"
+    "_dependencyType": "storage.azure"
   }
 }

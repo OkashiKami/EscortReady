@@ -1,12 +1,10 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Newtonsoft.Json;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
 using System.Text;
-using System.Threading.Channels;
 
 namespace EscortsReady
 {

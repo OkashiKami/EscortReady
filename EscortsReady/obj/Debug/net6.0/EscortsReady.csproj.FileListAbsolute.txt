@@ -46,3 +46,5 @@ F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\E
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\Exports\EscortsHead.png
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\Exports\Heart.png
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\WeTransfer.NET.dll
+F:\Documents\source\repos\EscortsReady\EscortsReady\obj\Debug\net6.0\EscortsReady.RazorAssemblyInfo.cache
+F:\Documents\source\repos\EscortsReady\EscortsReady\obj\Debug\net6.0\EscortsReady.RazorAssemblyInfo.cs

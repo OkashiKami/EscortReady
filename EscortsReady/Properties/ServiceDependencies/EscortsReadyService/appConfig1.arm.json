@@ -4,7 +4,7 @@
   "parameters": {
     "resourceGroupName": {
       "type": "string",
-      "defaultValue": "PermissionEx20221021213510ResourceGroup",
+      "defaultValue": "okashitech",
       "metadata": {
         "_parameterType": "resourceGroup",
         "description": "Name of the resource group for the resource. It is recommended to put resources under same resource group for better tracking."
@@ -36,7 +36,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat(parameters('resourceGroupName'), 'Deployment', uniqueString(concat('EscortsReadyvault', subscription().subscriptionId)))]",
+      "name": "[concat(parameters('resourceGroupName'), 'Deployment', uniqueString(concat('okashitechappconfig', subscription().subscriptionId)))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "apiVersion": "2019-10-01",
       "dependsOn": [
@@ -49,21 +49,14 @@
           "contentVersion": "1.0.0.0",
           "resources": [
             {
-              "name": "EscortsReadyvault",
-              "type": "Microsoft.KeyVault/vaults",
+              "type": "Microsoft.AppConfiguration/configurationStores",
               "location": "[parameters('resourceLocation')]",
-              "properties": {
-                "sku": {
-                  "family": "A",
-                  "name": "Standard"
-                },
-                "tenantId": "0ef8dec4-ba3a-4542-9817-204e982f00be",
-                "accessPolicies": [],
-                "enabledForDeployment": true,
-                "enabledForDiskEncryption": true,
-                "enabledForTemplateDeployment": true
+              "properties": {},
+              "sku": {
+                "name": "free"
               },
-              "apiVersion": "2016-10-01"
+              "name": "OkashiTechAppConfig",
+              "apiVersion": "2020-06-01"
             }
           ]
         }
@@ -71,6 +64,6 @@
     }
   ],
   "metadata": {
-    "_dependencyType": "secrets.keyVault"
+    "_dependencyType": "appConfig.azure"
   }
 }

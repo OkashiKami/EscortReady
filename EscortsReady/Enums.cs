@@ -55,4 +55,5 @@
         General = 1 << 1,
         All = Head | General,
     }
+    public enum StorageFileType { Settings, Image, Video, Document, Misc }
 }

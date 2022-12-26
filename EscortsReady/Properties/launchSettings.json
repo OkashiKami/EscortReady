@@ -5,8 +5,9 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "VaultUri": "https://permissionexvault.vault.azure.net/",
-        "AZURE_USERNAME": "zbigmoney305@gmail.com"
+        "VaultUri": "https://escortsreadyvault.vault.azure.net/",
+        "AZURE_USERNAME": "zbigmoney305@gmail.com",
+        "EscortReadyVaultUri": "https://escortsreadyvault.vault.azure.net/"
       }
     },
     "PermissionEx": {
@@ -14,8 +15,9 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "VaultUri": "https://permissionexvault.vault.azure.net/",
-        "AZURE_USERNAME": "zbigmoney305@gmail.com"
+        "VaultUri": "https://escortsreadyvault.vault.azure.net/",
+        "AZURE_USERNAME": "zbigmoney305@gmail.com",
+        "EscortReadyVaultUri": "https://escortsreadyvault.vault.azure.net/"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7071;http://localhost:5071"

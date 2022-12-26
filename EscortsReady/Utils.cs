@@ -3,8 +3,11 @@ using DSharpPlus.SlashCommands;
 using Newtonsoft.Json;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace EscortsReady
 {
@@ -211,7 +214,104 @@ namespace EscortsReady
             }
             await EscortProfile.SaveAsync(guild, profileContainer);
         }
+        public static string PrettyName(string value) => Regex.Replace(value, @"[^0-9a-zA-Z\._]", "");
+        public static string CalculateMD5(byte[] imgBytes)
+        {
+            using var md5 = MD5.Create();
+            var hash = md5.ComputeHash(imgBytes);
+            return Convert.ToBase64String(hash);
+        }
+        public static string GetDomain(string item)
+        {
+            if (item.ToLower().Contains("discord.gg")) return "Discord";
+            if (item.ToLower().Contains("gumroad.com")) return "Gumroad";
+            if (item.ToLower().Contains("twitter.com")) return "Twitter";
+            if (item.ToLower().Contains("youtube.com")) return "Youtube";
+            if (item.ToLower().Contains("udonvr.com")) return "UdonVR";
+            return new Uri(item).Host;
+        }
+        public static async Task<string> GetLocation(string value)
+        {
+            var split = value.Split('(', '~');
+            value = split[0];
 
+            if (value == string.Empty) return "N/A";
+            if (value == "offline") return value;
+            if (split.ToList().Contains("hidden")) return "In a Private World";
+            var _world = await VRChatService.GetWorldByIdAsync(value);
+            if (_world != null)
+                return $"**{_world.Name}** {_world.AuthorName}";
+            return "In a Private World";
+        }
+        public static async Task<Bitmap> EncodeImageAsync(string textToEncode, string fileName = "image.png")
+        {
+            //Debug.LogAsync(textToEncode, header: false);
+            var image = await EncodeTextAsync(textToEncode);
+
+            image.Save(fileName, System.Drawing.Imaging.ImageFormat.Png);
+
+            return image;
+        }
+        private static async Task<Bitmap> EncodeTextAsync(string input)
+        {
+            var textBytes_list = Encoding.Unicode.GetBytes(input);
+            textBytes_list = new byte[] { 255, 254 }.Concat(textBytes_list).ToArray();
+            var totalBytes = new byte[] { 0, 0, (byte)textBytes_list.Length };
+            //totalBytes = totalBytes.Reverse().ToArray();
+
+            //textBytes_list = new byte[] { 255, 254 }.Concat(textBytes_list).ToArray();
+
+            byte b = 16;
+            if (textBytes_list.Length % 3 != 0)
+                textBytes_list = textBytes_list.Append(b).ToArray();
+
+            if (textBytes_list.Length % 3 != 0)
+                textBytes_list = textBytes_list.Append(b).ToArray();
+
+            //for (int index = 0; index < textBytes_list.Length; index++)
+            //{
+            //    Console.WriteLine($"{index} : {(char)textBytes_list[index]}");
+            //}
+
+            //Console.WriteLine($"A{textBytes_list.Length}");
+            //Console.WriteLine($"B{(totalBytes[0], totalBytes[1], totalBytes[2])}");
+
+            var image_width = 128;
+            var image_height = 96;
+
+            var img = DrawFilledRectangle(image_width, image_height);
+
+            //var image1 = new Bitmap(@"imgp.png", true);
+            //Console.WriteLine("Pixel format P : " + image1.PixelFormat.ToString());
+            //Console.WriteLine("Pixel format C#: " + img.PixelFormat.ToString());
+            img.SetPixel(img.Width - 1, 0, Color.FromArgb(totalBytes[0], totalBytes[1], totalBytes[2]));
+
+            foreach (var x in Enumerable.Range(1, (textBytes_list.Length / 3) + 1 - 1))
+            {
+                //Console.WriteLine($"(({img.Width}w - 1) - {x}x) % {img.Width}w = {((img.Width - 1) - x) % img.Width}");
+                //Console.WriteLine($"{Mod(((img.Width - 1) - x), img.Width) }");
+                int cx = (int)Mod(((img.Width - 1) - x), img.Width);
+                //Console.WriteLine(cx);
+                img.SetPixel(cx, x / img.Width, Color.FromArgb(textBytes_list[(x - 1) * 3], textBytes_list[((x - 1) * 3) + 1], textBytes_list[((x - 1) * 3) + 2]));
+            }
+            //Debug.LogAsync("Done!", header: false);
+            await Task.CompletedTask;
+            return img;
+        }
+        static float Mod(float a, float b)
+        {
+            return a - (b * MathF.Floor(a / b));
+        }
+        static private Bitmap DrawFilledRectangle(int x, int y)
+        {
+            Bitmap bmp = new Bitmap(x, y, PixelFormat.Format24bppRgb);
+            using (Graphics graph = Graphics.FromImage(bmp))
+            {
+                Rectangle ImageSize = new Rectangle(0, 0, x, y);
+                graph.FillRectangle(Brushes.White, ImageSize);
+            }
+            return bmp;
+        }
         public static string? MKToken()
         {
             var sb = new StringBuilder();

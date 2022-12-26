@@ -3,16 +3,10 @@
 using DSharpPlus.Entities;
 using Newtonsoft.Json;
 using System.Diagnostics;
-using System.Security.Principal;
 using System.Text.RegularExpressions;
 using System.Text;
-using System;
-using System.Threading.Tasks;
-using System.IO;
-using System.Linq;
-using System.Collections.Generic;
 
-namespace PermissionEx
+namespace EscortsReady
 {
     public class Member
     {
@@ -98,7 +92,11 @@ namespace PermissionEx
                 })));
                 Task.WaitAll(tasklist.ToArray());
             }
-            catch (Exception ex) { await LoggerEx.LogAsync(ex); }
+            catch (Exception ex)
+            {
+                Utils.ReportException(ex);
+                Program.logger.LogError($"{ex}");
+            }
         }
 
         public void AddRole(DiscordRole _role)
@@ -128,20 +126,20 @@ namespace PermissionEx
         {
             var watch = Stopwatch.StartNew();
             var files = Directory.GetFiles(GetDirectory(guild), "*.json", SearchOption.AllDirectories);
-            var members = files.Select(x => JsonConvert.DeserializeObject<Member>(File.ReadAllText(x), Utils.JsonSettings)).ToList();
+            var members = files.Select(x => JsonConvert.DeserializeObject<Member>(File.ReadAllText(x), Utils.serializerSettings)).ToList();
             var member = predicate != null ? members.Find(predicate) : members.First();
             watch.Stop();
-            await LoggerEx.LogAsync($"It took {TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).Milliseconds}ms to complete {nameof(LoadAsync)}");
+            Program.logger.LogInformation($"It took {TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).Milliseconds}ms to complete {nameof(LoadAsync)}");
             return member;
         }
         public static async Task<List<Member>> LoadAllAsync(DiscordGuild guild, Predicate<Member>? predicate = null)
         {
             var watch = Stopwatch.StartNew();
             var files = Directory.GetFiles(GetDirectory(guild), "*.json", SearchOption.AllDirectories);
-            var members = files.Select(x => JsonConvert.DeserializeObject<Member>(File.ReadAllText(x), Utils.JsonSettings)).ToList();
+            var members = files.Select(x => JsonConvert.DeserializeObject<Member>(File.ReadAllText(x), Utils.serializerSettings)).ToList();
             members = predicate != null ? members.FindAll(predicate) : members;
             watch.Stop();
-            await LoggerEx.LogAsync($"It took {TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).Milliseconds}ms to complete {nameof(LoadAllAsync)}");
+            Program.logger.LogInformation($"It took {TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).Milliseconds}ms to complete {nameof(LoadAllAsync)}");
             return members;
         }
         public static async Task<List<Member>> CleanAllAsync(DiscordGuild guild, Predicate<Member>? predicate = null)
@@ -154,20 +152,21 @@ namespace PermissionEx
                 try
                 {
 
-                    var m = JsonConvert.DeserializeObject<Member>(File.ReadAllText(x), Utils.JsonSettings);
+                    var m = JsonConvert.DeserializeObject<Member>(File.ReadAllText(x), Utils.serializerSettings);
                     if (m != null && gms.ToList().Find(x => x.Id == m.id) == null)
                         File.Delete(x);
                 }
                 catch (Exception ex)
                 {
-                    await LoggerEx.LogAsync(ex);
+                    Utils.ReportException(ex);
+                    Program.logger.LogError($"{ex}");
                 }
             });
             files = Directory.GetFiles(GetDirectory(guild), "*.json", SearchOption.AllDirectories);
-            var members = files.Select(x => JsonConvert.DeserializeObject<Member>(File.ReadAllText(x), Utils.JsonSettings)).ToList();
+            var members = files.Select(x => JsonConvert.DeserializeObject<Member>(File.ReadAllText(x), Utils.serializerSettings)).ToList();
             members = predicate != null ? members.FindAll(predicate) : members;
             watch.Stop();
-            await LoggerEx.LogAsync($"It took {TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).Milliseconds}ms to complete {nameof(LoadAllAsync)}");
+            Program.logger.LogInformation($"It took {TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).Milliseconds}ms to complete {nameof(LoadAllAsync)}");
             return members;
         }
         public static async Task SaveAsync(DiscordGuild guild, Member profile, string? directoryOverride = null)
@@ -180,14 +179,15 @@ namespace PermissionEx
                 {
                     using (var sw = new StreamWriter(fs, Encoding.Unicode))
                     {
-                        var json = JsonConvert.SerializeObject(profile, Utils.JsonSettings);
+                        var json = JsonConvert.SerializeObject(profile, Utils.serializerSettings);
                         await sw.WriteAsync(json);
                     }
                 }
             }
             catch (Exception ex)
             {
-                await LoggerEx.LogAsync(ex);
+                Utils.ReportException(ex);
+                Program.logger.LogError($"{ex}");
             }
         }
 

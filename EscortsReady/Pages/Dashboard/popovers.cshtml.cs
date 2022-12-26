@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PermissionEx.Pages.Shared.Error;
+using EscortsReady.Pages.Shared.Error;
 
-namespace PermissionEx.Pages.Dashboard;
+namespace EscortsReady.Pages.Dashboard;
 
 [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 [IgnoreAntiforgeryToken]

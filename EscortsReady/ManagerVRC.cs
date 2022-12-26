@@ -3,19 +3,13 @@
 using DSharpPlus.Entities;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Text;
 using VRChat.API.Client;
 using VRChat.API.Model;
-using System.Threading.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 
-namespace PermissionEx
+namespace EscortsReady
 {
     public class VRChatService
     {
@@ -35,7 +29,7 @@ namespace PermissionEx
         {
             var id = string.Empty;
             if (string.IsNullOrEmpty(Program.Configuration.GetValue<string>("VRCIID")))
-                id = "PermissionEx";
+                id = "EscortsReady";
             id = Program.Configuration.GetValue<string>("VRCIID");
             return id;
         }
@@ -55,7 +49,7 @@ namespace PermissionEx
             config.AccessToken = Program.Configuration.GetValue<string>("VRCAT");
             if (string.IsNullOrEmpty(config.Username) || string.IsNullOrEmpty(config.Password))
             {
-                await LoggerEx.LogAsync("The VRChat _vrcUsername and or _vrcPassword is incorrect, please check your settings file to ensure that the login is correct");
+                Program.logger.LogInformation("The VRChat _vrcUsername and or _vrcPassword is incorrect, please check your settings file to ensure that the login is correct");
                 IsLoggedIn = false;
                 return false;
             }
@@ -70,24 +64,26 @@ namespace PermissionEx
                     {
                         var authResponse = await vrchatapi.Authentication.VerifyAuthTokenAsync();
                         var authToken = authResponse.Token;
-                        await LoggerEx.LogAsync($"AuthToken: {authToken}");
+                        Program.logger.LogInformation($"AuthToken: {authToken}");
                     }
                     catch (Exception ex)
                     {
-                        await LoggerEx.LogAsync($"ERROR: Unable to fetch auth token. Make sure to successfully login before starting to stream.\n{ex}");
+                        Utils.ReportException(ex);
+                        Program.logger.LogError($"ERROR: Unable to fetch auth token. Make sure to successfully login before starting to stream.\n{ex}");
                         IsLoggedIn = false;
                         return false;
                     }
 
                     IsLoggedIn = true;
-                    _currentUser = JsonConvert.DeserializeObject<CurrentUser>(cu.RawContent, Utils.JsonSettings);
-                    await LoggerEx.LogAsync("VRC Ok!");
+                    _currentUser = JsonConvert.DeserializeObject<CurrentUser>(cu.RawContent, Utils.serializerSettings);
+                    Program.logger.LogInformation("VRC Ok!");
                     return true;
                 }
             }
             catch (Exception ex)
             {
-                await LoggerEx.LogAsync($"VRC Error!\n{ex}");
+                Utils.ReportException(ex);
+                Program.logger.LogInformation($"VRC Error!\n{ex}");
                 IsLoggedIn = false;
                 return false;
             }
@@ -107,20 +103,21 @@ namespace PermissionEx
             try
             {
                 var duser = await Member.LoadAsync(guild, x => x.id == ownerid);
-                await LoggerEx.LogAsync(duser.vrcdisplayname);
+                Program.logger.LogInformation(duser.vrcdisplayname);
 
                 var instanceid = $"{await worldid()}:{await instanceID()}~private({duser.id})~nonce({Guid.NewGuid()})";
-                await LoggerEx.LogAsync($"Instance Data: {instanceid}");
+                Program.logger.LogInformation($"Instance Data: {instanceid}");
                 var curUser = await vrchatapi.Authentication.GetCurrentUserAsync();
                 var inviteRequest = new InviteRequest(instanceid);
                 var result = await vrchatapi.Invites.InviteUserAsync(user.Id, inviteRequest);
-                await LoggerEx.LogAsync(result);
+                Program.logger.LogInformation($"{result}");
                 if (onSuccess != null)
                     onSuccess?.Invoke();
             }
             catch (ApiException ex)
             {
-                await LoggerEx.LogAsync(ex);
+                Utils.ReportException(ex);
+                Program.logger.LogError($"{ex}");
             }
         }
         public static async Task<User?> SendFriendRequestAsync(DiscordMember discordMember, Action? onSuccess = null)
@@ -141,7 +138,7 @@ namespace PermissionEx
                         timeSinceLstRequest = DateTime.Now;
 
                         Notification result = await vrchatapi.Friends.FriendAsync(user.Id);
-                        await LoggerEx.LogAsync(result);
+                        Program.logger.LogInformation($"{result}");
                         onSuccess?.Invoke();
                     }
                 }).GetAwaiter();
@@ -149,7 +146,8 @@ namespace PermissionEx
             }
             catch (ApiException ex)
             {
-                await LoggerEx.LogAsync(ex);
+                Utils.ReportException(ex);
+                Program.logger.LogError($"{ex}");
                 return default;
             }
 
@@ -166,20 +164,21 @@ namespace PermissionEx
                 if (user.IsFriend)
                 {
                     var result = await vrchatapi.Friends.UnfriendAsync(user.Id);
-                    await LoggerEx.LogAsync(result);
+                    Program.logger.LogInformation($"{result}");
                     onSuccess?.Invoke();
                     return await Task.FromResult(user);
                 }
                 else
                 {
-                    await LoggerEx.LogAsync($"{discordMember.Username}#{discordMember.Discriminator}'s vrchat account is already friends with {_currentUser.Username}");
+                    Program.logger.LogError($"{discordMember.Username}#{discordMember.Discriminator}'s vrchat account is already friends with {_currentUser.Username}");
                 }
 
                 return user;
             }
             catch (ApiException ex)
             {
-                await LoggerEx.LogAsync(ex);
+                Utils.ReportException(ex);
+                Program.logger.LogError($"{ex}");
                 return default;
             }
         }
@@ -197,7 +196,8 @@ namespace PermissionEx
             }
             catch (ApiException ex)
             {
-                await LoggerEx.LogAsync(ex);
+                Utils.ReportException(ex);
+                Program.logger.LogInformation($"{ex}");
                 return default;
             }
         }
@@ -213,7 +213,8 @@ namespace PermissionEx
             }
             catch (ApiException ex)
             {
-                await LoggerEx.LogAsync(ex);
+                Utils.ReportException(ex);
+                Program.logger.LogError($"{ex}");
                 return default;
             }
         }
@@ -230,7 +231,8 @@ namespace PermissionEx
             }
             catch (ApiException ex)
             {
-                await LoggerEx.LogAsync(ex);
+                Utils.ReportException(ex);
+                Program.logger.LogError($"{ex}");
                 return default;
             }
         }
@@ -255,7 +257,8 @@ namespace PermissionEx
             }
             catch (ApiException ex)
             {
-                await LoggerEx.LogAsync(ex);
+                Utils.ReportException(ex);
+                Program.logger.LogError($"{ex}");
                 return default;
             }
         }
@@ -264,16 +267,17 @@ namespace PermissionEx
             if (!await LoginAsync()) return default;
             try
             {
-                await LoggerEx.LogAsync("Getting World Info");
+                Program.logger.LogInformation("Getting World Info");
                 World World = await vrchatapi.Worlds.GetWorldAsync(worldid);
                 if (World == null) return default;
-                await LoggerEx.LogAsync($"Found world {World.Name}, visits: {World.Visits}");
+                Program.logger.LogInformation($"Found world {World.Name}, visits: {World.Visits}");
                 onSuccess?.Invoke();
                 return Task.FromResult(World).Result;
             }
             catch (ApiException ex)
             {
-                await LoggerEx.LogAsync(ex);
+                Utils.ReportException(ex);
+                Program.logger.LogError($"{ex}");
                 return default;
             }
         }
@@ -289,12 +293,13 @@ namespace PermissionEx
                     var curUser = await vrchatapi.Authentication.GetCurrentUserAsync();
                     var inviteRequest = new InviteRequest($"{await worldid()}:{await instanceID()}~hidden({curUser.Id})~region(use)~nonce({Guid.NewGuid()})");
                     var result = await vrchatapi.Invites.InviteUserAsync(friend.Id, inviteRequest);
-                    await LoggerEx.LogAsync(result);
+                    Program.logger.LogInformation($"{result}");
                     onSuccess?.Invoke();
                 }
                 catch (ApiException ex)
                 {
-                    await LoggerEx.LogAsync(ex);
+                    Utils.ReportException(ex);
+                    Program.logger.LogError($"{ex}");
                 }
             }
         }
@@ -337,7 +342,7 @@ namespace PermissionEx
                             notification.Seen = true;
                             break;
                         default:
-                            await LoggerEx.LogAsync(notification.ToJson());
+                            Program.logger.LogInformation(notification.ToJson());
                             break;
                     }
                 }
@@ -359,7 +364,7 @@ namespace PermissionEx
             {
                 var fileId = default(string);
                 var match = Regex.Match(avi.imageUrl, "file_[0-9A-Za-z-]+");
-                if (!match.Success) { await LoggerEx.LogAsync($"Cannot upload image: Failed to extract fileId"); }
+                if (!match.Success) { Program.logger.LogInformation($"Cannot upload image: Failed to extract fileId"); }
                 else fileId = match.Value;
                 var bytes = await System.IO.File.ReadAllBytesAsync("image.png");
                 var md5 = Utils.CalculateMD5(bytes);
@@ -396,7 +401,7 @@ namespace PermissionEx
                     else
                     {
                         var str = await _res.Content.ReadAsStringAsync();
-                        await LoggerEx.LogAsync($"{_res.StatusCode} [{_res.ReasonPhrase}]\n{str}\n");
+                        Program.logger.LogInformation($"{_res.StatusCode} [{_res.ReasonPhrase}]\n{str}\n");
                     }
                 }
                 await vrchatapi.Files.FinishFileDataUploadAsync(fileId, fvn, "file");

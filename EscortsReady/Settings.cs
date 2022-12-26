@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EscortsReady
 {
-    internal class Settings : FileData
+    public class Settings : FileData
     {
         public Dictionary<string, object> library = new Dictionary<string, object>();
         public static async Task<Settings> LoadAsync(DiscordGuild guild)

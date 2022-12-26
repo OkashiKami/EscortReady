@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace PermissionEx.Pages;
+namespace EscortsReady.Pages;
 
 public class PrivacyModel : PageModel
 {

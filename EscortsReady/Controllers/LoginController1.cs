@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace PermissionEx.Controllers
+namespace EscortsReady.Controllers
 {
     [Route("[controller]")]
     [ApiController]

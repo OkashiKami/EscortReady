@@ -4,9 +4,10 @@ using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using PermissionEx;
+using EscortsReady;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using DSharpPlus.Entities;
 
 namespace EscortsReady
 {
@@ -23,6 +24,8 @@ namespace EscortsReady
         private int checkVRCCred;
         private ILogger Logger;
         public static DiscordClient Client { get; private set; }
+        public static DiscordGuild selectedGuild;
+
 
 
         public DiscordService(ILogger logger)
@@ -140,5 +143,13 @@ namespace EscortsReady
             Client = null;
             GC.SuppressFinalize(this);
         }       
+
+
+        public static async Task<List<DiscordGuild>> MyGuildsAsync()
+        {
+
+
+            return Client.Guilds.Select(x => x.Value).ToList();
+        }
     }
 }

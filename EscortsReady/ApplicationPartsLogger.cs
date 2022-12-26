@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 
-namespace PermissionEx
+namespace EscortsReady
 {
     public class ApplicationPartsLogger : IHostedService
     {

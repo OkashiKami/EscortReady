@@ -10,7 +10,7 @@
         "EscortReadyVaultUri": "https://escortsreadyvault.vault.azure.net/"
       }
     },
-    "PermissionEx": {
+    "EscortsReady": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

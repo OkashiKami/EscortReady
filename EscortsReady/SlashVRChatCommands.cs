@@ -9,7 +9,7 @@ using System.Security.Principal;
 using VRChat.API.Model;
 using DSharpPlus.Interactivity.Extensions;
 
-namespace PermissionEx
+namespace EscortsReady
 {
 
     [SlashCommandGroup("vrc", "VRChat Module")]
@@ -19,7 +19,7 @@ namespace PermissionEx
         public async Task Link(InteractionContext ctx, [RemainingText, Option("VRChatInfo", "This would be your vrchat Profile URL, _vrcUsername, or Displayname, recommend: profile url")] string? vrcinfo)
         {
             await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-            await LoggerEx.LogAsync(ctx);
+            Program.logger.LogInformation($"{ctx}");
             List<User> users = new List<User>();
             try
             {
@@ -150,7 +150,7 @@ namespace PermissionEx
         public async Task LinkThem(InteractionContext ctx, [Option("DiscordUser", "The member you want to register")] DiscordUser member, [RemainingText, Option("VRChatInfo", "This would be your vrchat Profile URL, _vrcUsername, or Displayname, recommend: profile url")] string? vrcinfo = null)
         {
             await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-            await LoggerEx.LogAsync(ctx);
+            Program.logger.LogInformation($"{ctx}");
             var _member = await Member.LoadAsync(ctx.Guild, x => x.id == member.Id);
             List<User> users = new List<User>();
             try
@@ -460,7 +460,7 @@ namespace PermissionEx
         public async Task WhoAmI(InteractionContext ctx)
         {
             await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-            await LoggerEx.LogAsync(ctx);
+            Program.logger.LogInformation($"{ctx}");
             var _member = await Member.LoadAsync(ctx.Guild, x => x.id == ctx.Member.Id);
             var vrcuser = await VRChatService.GetUserByProfileURLAsync(_member.vrcuserid) ?? await VRChatService.GetUserByUsernameAsync(_member.vrcdisplayname) ?? await VRChatService.GetUserByDisplaynameAsync(_member.vrcdisplayname);
             if (vrcuser != default)
@@ -493,7 +493,7 @@ namespace PermissionEx
         public async Task WhoAreThey(InteractionContext ctx, [Option("DiscordUser", "The member you would like to get info on")] DiscordUser member = null, [Option("Query", "The member you would like to get info on")] string query = null)
         {
             await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-            await LoggerEx.LogAsync(ctx);
+            Program.logger.LogInformation($"{ctx}");
             var role = ctx.Guild.Roles.FirstOrDefault(x => x.Value.Name == "VRCLinked").Value;
             if (!((DiscordMember)member).Roles.Contains(role))
             {

@@ -55,7 +55,7 @@
               "sku": {
                 "name": "free"
               },
-              "name": "PermissionExConfig",
+              "name": "EscortsReadyConfig",
               "apiVersion": "2020-06-01"
             }
           ]

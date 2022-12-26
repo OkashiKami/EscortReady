@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using VRChat.API.Model;
 
-namespace PermissionEx
+namespace EscortsReady
 {
     public class AssetUrlObject
     {

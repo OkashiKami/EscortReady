@@ -18,7 +18,7 @@ namespace EscortsReady
         private static WebApplicationBuilder builder;
         public static ConfigurationManager Configuration { get; private set; }
         private static WebApplication app;
-        private static ILogger logger;
+        public static ILogger logger { get; private set; }
         private static IConfigurationRoot c2;
 
         public static async Task Main(params string[] args)

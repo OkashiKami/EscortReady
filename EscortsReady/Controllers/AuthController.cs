@@ -6,7 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace PermissionEx.Controllers
+namespace EscortsReady.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -53,7 +53,7 @@ namespace PermissionEx.Controllers
 
 
         
-        [HttpGet("MyGuilds")]
+        [HttpGet("MyGuildsAsync")]
         public object Guilds()  
         {
             return new

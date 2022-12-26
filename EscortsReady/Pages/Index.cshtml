@@ -1,5 +1,4 @@
 ﻿@page
-@using PermissionEx.Logic
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
@@ -15,7 +14,7 @@
             <div style="float: left" class="col-sm-6">
                 <div class="breadcrumbs-area clearfix">
                     @{
-                        if (PageManager.currentGuild == null)
+                        if (Session.CurrentGuild == null)
                         {
                                     <h4 class="page-title pull-left">Dashboard</h4>
                         }
@@ -24,8 +23,8 @@
                                     <div style="float: left; width: 10%; margin-right: 5px; border-style: solid; border-width: 2px; border-radius: 30px" class="single-report mb-xs-30">
                                         <input type="button" style="width: 100%; margin-right: 3px; height: 100%;" ID="btnSelectServerJS" onclick="callRemoveServerCSMethod();" value="◄ Back" />
                                     </div>
-                                    <center><img style="float: left; border-radius: 100%; " src=@PageManager.currentGuild.image width="32" height="32" /></center>
-                            var name = PageManager.currentGuild != null ? PageManager.currentGuild.Name : "Current Guilds";
+                                    <center><img style="float: left; border-radius: 100%; " src=@Session.CurrentGuild.image width="32" height="32" /></center>
+                            var name = Session.CurrentGuild != null ? Session.CurrentGuild.Name : "Current Guilds";
                                     <p style="float: left;" class="page-title pull-left">@name</p>
                         }
 
@@ -36,7 +35,7 @@
                                     </form>
                                 </div>
 
-                        if (PageManager.currentGuild != null)
+                        if (Session.CurrentGuild != null)
                         {
                                     <div style="border-style: solid; border-width: 2px; border-radius: 30px" class="single-report mb-xs-30">
                                         <input type="button" style="float: left; position:relative; width: 20%; margin-right: 3px; height: 100%;" ID="btnSelectServerJS" onclick="callApplyCSMethod();" value="Apply" />

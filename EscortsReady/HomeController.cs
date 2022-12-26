@@ -1,7 +1,7 @@
 ﻿    using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PermissionEx
+namespace EscortsReady
 {
     [Route("api/[controller]")]
     [ApiController]

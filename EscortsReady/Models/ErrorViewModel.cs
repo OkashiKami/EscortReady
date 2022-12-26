@@ -1,4 +1,4 @@
-namespace PermissionEx.Models
+namespace EscortsReady.Models
 {
     public class ErrorViewModel
     {

@@ -56,4 +56,13 @@
         All = Head | General,
     }
     public enum StorageFileType { Settings, Image, Video, Document, Misc }
+
+    public enum GuildRank
+    {
+        Rank1,
+        Rank2,
+        Rank3,
+        Rank4,
+        Premium,
+    }
 }

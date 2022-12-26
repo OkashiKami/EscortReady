@@ -5,14 +5,14 @@ using DSharpPlus.EventArgs;
 using DSharpPlus;
 using System.Diagnostics;
 
-namespace PermissionEx
+namespace EscortsReady
 {
     public class ReactionHandler
     {
         public static async Task OnInteractionCreated(ComponentInteractionCreateEventArgs e)
         {
             await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
-            await LoggerEx.LogAsync(e);
+            Program.logger.LogInformation($"{e}");
             if (e.Id.Contains("-location")) await DoLocationAsync(e);
             else if (e.Id.Contains("-gender")) await DoGenderAsync(e);
             else if (e.Id.Contains("-dms")) await DoDMsAsync(e);

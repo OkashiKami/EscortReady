@@ -1,41 +1,40 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PermissionEx.Controllers
+namespace EscortsReady.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
         [HttpPost("UVRCU")]
-        public object UVRCU(int index, string? name)
+        public async Task<object> UVRCUAsync(int index, string? name)
         {
-            var settings = Utils.CurrentGuildSettings;
+            var settings = await Settings.LoadAsync(Session.CurrentGuild.source);
             if (settings != null)
             {
-                var uentry = settings.UserEntries[index];
-                uentry.vrchatUsername = name;
-                settings.UserEntries[index] = uentry;
-                Utils.CurrentGuildSettings = settings;
-                return uentry;
+                var ue = (List<DUser>)settings["UserEntries"];
+                ue[index].vrchatUsername = name;
+                settings["UserEntries"] = ue;
+                await Settings.SaveAsync(Session.CurrentGuild.source, settings);
+                return ue[index];
             }
             return BadRequest();
         }
         [HttpPost("UDU")]
-        public object UDU(int index, ulong id, string? username, string? discriminator, string? email)
+        public async Task<object> UDUAsync(int index, ulong id, string? username, string? discriminator, string? email)
         {
-            var settings = Utils.CurrentGuildSettings;
+            var settings = await Settings.LoadAsync(Session.CurrentGuild.source);
             if (settings != null)
             {
-                var uentry = settings.UserEntries[index];
-                uentry.id = id;
-                uentry.username = username;
-                uentry.discriminator = discriminator;
-                uentry.email = email;
-
-                settings.UserEntries[index] = uentry;
-                Utils.CurrentGuildSettings = settings;
-                return uentry;
+                var ue = (List<DUser>)settings["UserEntries"];
+                ue[index].id = id;
+                ue[index].username = username;
+                ue[index].discriminator = discriminator;
+                ue[index].email = email;
+                settings["UserEntries"] = ue;
+                await Settings.SaveAsync(Session.CurrentGuild.source, settings);
+                return ue[index];
             }
             return BadRequest();
         }

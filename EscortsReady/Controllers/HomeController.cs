@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using PermissionEx.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using PermissionEx.Logic;
 using Microsoft.Extensions.Options;
+using EscortsReady;
+using EscortsReady.Models;
 
-namespace PermissionEx.Controllers
+namespace EscortsReady.Controllers
 {
     public class HomeController : Controller
     {
@@ -32,8 +32,8 @@ namespace PermissionEx.Controllers
         [Authorize(AuthenticationSchemes = "Discord")]
         public IActionResult Dashboard()
         {
-            if (Utils.CurrentUser == null)
-                Utils.CurrentUser = new DUser
+            if (Session.CurrentUser == null)
+                Session.CurrentUser = new DUser
                 {
                     id = ulong.Parse((string)User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value),
                     username = User.Claims.First(x => x.Type == ClaimTypes.Name).Value,
@@ -47,28 +47,29 @@ namespace PermissionEx.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DashboardSelectGuild(string id)
         {
-            var guilds = await Utils.MyGuilds();
+            var guilds = await DiscordService.MyGuildsAsync();
             var guild = !string.IsNullOrEmpty(id) ? guilds.Find(x => x.Id == ulong.Parse(id)) : null;
             if (guild != null)
-                Utils.CurrentGuild = guild;
+                Session.CurrentGuild = guild;
             return Redirect("/Home/Dashboard");
         }
         [HttpGet]
         public IActionResult DashboardDeselectGuild()
         {
-            if (Utils.CurrentGuild != null)
-                Utils.CurrentGuild = null;
+            if (Session.CurrentGuild != null)
+                Session.CurrentGuild = null;
             return Redirect("/Home/Dashboard");
         }
 
         [HttpGet]
-        public IActionResult DashboardAddUserEntry()
+        public async Task<IActionResult> DashboardAddUserEntry()
         {
-            var settings = Utils.CurrentGuildSettings;
+            var settings = await  Settings.LoadAsync(Session.CurrentGuild.source);
             if (settings != null)
             {
-                settings.UserEntries.Add(new DUser());
-                Utils.CurrentGuildSettings = settings;
+                var ue = (List<DUser>)settings["UserEntries"];
+                    ue.Add(new DUser());
+                await Settings.SaveAsync(Session.CurrentGuild.source, settings);
             }
             return Redirect("/Home/Dashboard");
         }

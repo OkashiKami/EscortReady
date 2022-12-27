@@ -424,3 +424,5 @@ F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\E
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\Exports\EscortsHead.png
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\Exports\Heart.png
 F:\Documents\source\repos\EscortsReady\EscortsReady\obj\Debug\net6.0\scopedcss\obj\Pages\Shared\_Layout.cshtml.rz.scp.css
+F:\Documents\source\repos\EscortsReady\EscortsReady\obj\Debug\net6.0\EscortsReady.Properties.Resources.resources
+F:\Documents\source\repos\EscortsReady\EscortsReady\obj\Debug\net6.0\EscortsReady.csproj.GenerateResource.cache

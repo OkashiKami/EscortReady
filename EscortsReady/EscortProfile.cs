@@ -8,6 +8,8 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Metrics;
+using System.Drawing;
 using System.Text;
 
 namespace EscortsReady
@@ -135,7 +137,7 @@ namespace EscortsReady
             embed.AddField("**6** Prefered Body Types", profile.bodyTypes.ToString(), true);
             embed.AddField("**7** Available Times", profile.timesAvailable, true);
             embed.AddField("**8** Kinks/Fetishes", profile.kinksAndFetishes, true);
-            embed.AddField("**9** Do’s/Donts (These should be made very clear for members to understand)", profile.doAndDonts);
+            embed.AddField("**9** Do’s/Dont's (These should be made very clear for members to understand)", profile.doAndDonts);
             embed.AddField("**10** Why they became and escort", profile.ReasonForJoining);
             embed.AddField("**11** About Them", profile.AboutMe);
             if (!string.IsNullOrEmpty(profile.AvatarUrl) && !profile.AvatarUrl.Equals(Utils.Unset, StringComparison.OrdinalIgnoreCase))
@@ -152,7 +154,25 @@ namespace EscortsReady
             mb.WithEmbed(embed);
             mb.AddComponents(new[] 
             { 
-                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_1", "Submit", false, new DiscordComponentEmoji("✅")) 
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_1", "VRC Name"),
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_2", "Gender"),
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_3", "Service"),
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_4", "Equipment"),
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_5", "Role"),
+            });
+            mb.AddComponents(new[]
+            {
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_6", "Prefered Gender"),
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_7", "Times Available"),
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_8", "Kinks/Fetishes"),
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_9", "Do’s/Dont's"),
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_10", "Join Reson"),
+            });
+            mb.AddComponents(new[]
+            {
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_11", "About Me"),
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_12", "Tip Link"),
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_13", "Profile Image"),
             });
             mb.AddComponents(new[] { new DiscordButtonComponent(ButtonStyle.Primary, "escort_edit_submit", "Submit", false, new DiscordComponentEmoji("✅")) });
             return mb;
@@ -181,18 +201,20 @@ namespace EscortsReady
                 library.Remove(key);
         }
 
+        private static DiscordGuild GetInteractionGuild(ComponentInteractionCreateEventArgs e)
+        {
+            var msgurl = e.Message.Embeds.First().Author.Url.ToString();
+            var guidid = msgurl.Replace("https://", string.Empty).Replace(".com/", string.Empty);
+            var guildid = ulong.Parse(guidid);
+            var guild = e.Guild != null ? e.Guild : DiscordService.Client.Guilds[guildid];
+            return guild;
+        }
+
         public static async Task HandelInteractionAsync(DiscordClient s, ComponentInteractionCreateEventArgs e)
         {
             try
             {
-                var msgurl = e.Message.Embeds.First().Author.Url.ToString();
-                var guidid = msgurl.Replace("https://", string.Empty).Replace(".com/", string.Empty);
-                
-
-                var guildid = ulong.Parse(guidid);
-                var guild = e.Guild != null ? e.Guild : DiscordService.Client.Guilds[guildid];
-
-
+                var guild = GetInteractionGuild(e);
                 var settings = await Settings.LoadAsync(guild);
                 var member = await Utils.GetMemberAsync(guild, e.Message.MentionedUsers.First().Id);
                 var profiles = await LoadAsync(guild);
@@ -217,6 +239,7 @@ namespace EscortsReady
                     case "escort_edit_submit":
                         profile =  profiles[e.Message.MentionedUsers.First().Id];
                         
+                        
                         profile.vrcName = e.Message.Embeds.First().Fields[0].Value;
                         profile.gender = Enum.Parse<GType>(e.Message.Embeds.First().Fields[1].Value, true);
                         profile.serviceType = Enum.Parse<SType>(e.Message.Embeds.First().Fields[2].Value, true);
@@ -228,14 +251,31 @@ namespace EscortsReady
                         profile.doAndDonts = e.Message.Embeds.First().Fields[8].Value;
                         profile.ReasonForJoining = e.Message.Embeds.First().Fields[9].Value;
                         profile.AboutMe = e.Message.Embeds.First().Fields[10].Value;
-                        profile.AvatarUrl = e.Message.Embeds.First().Image.Url.ToString();
-                        profile.tipLink = e.Message.Embeds.First().Fields[12].Value;
+                        profile.tipLink = e.Message.Embeds.First().Fields[11].Value;
+                        if (e.Message.Embeds.First().Image != null)
+                            profile.AvatarUrl = e.Message.Embeds.First().Image.Url.ToString();
                         
                         profiles[e.Message.MentionedUsers.First().Id] = profile;
                         await SaveAsync(guild, profiles);
                         await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
+                        await e.Message.DeleteAsync("Profile has been submitted");
+                        await e.Channel.SendMessageAsync("Profile has been updated");
                         break;
-                   
+
+                    // Edit functions 
+                    case "escort_edit_field_1": await UpdateProfileAsync(e, FieldEdit.VRChatName); break;
+                    case "escort_edit_field_2": await UpdateProfileAsync(e, FieldEdit.Gender); break;
+                    case "escort_edit_field_3": await UpdateProfileAsync(e, FieldEdit.ServiceType); break;
+                    case "escort_edit_field_4": await UpdateProfileAsync(e, FieldEdit.EquipmentType); break;
+                    case "escort_edit_field_5": await UpdateProfileAsync(e, FieldEdit.RoleType); break;
+                    case "escort_edit_field_6": await UpdateProfileAsync(e, FieldEdit.PreferedBodyTypes); break;
+                    case "escort_edit_field_7": await UpdateProfileAsync(e, FieldEdit.AvailableTimes); break;
+                    case "escort_edit_field_8": await UpdateProfileAsync(e, FieldEdit.KinksFetishes); break;
+                    case "escort_edit_field_9": await UpdateProfileAsync(e, FieldEdit.DoDonts); break;
+                    case "escort_edit_field_10": await UpdateProfileAsync(e, FieldEdit.JoinReson); break;
+                    case "escort_edit_field_11": await UpdateProfileAsync(e, FieldEdit.AbountMe); break;
+                    case "escort_edit_field_12": await UpdateProfileAsync(e, FieldEdit.TipLink); break;
+                    case "escort_edit_field_13": await UpdateProfileAsync(e, FieldEdit.ProfileImage); break;
                 }
             }
             catch(Exception ex)
@@ -245,162 +285,153 @@ namespace EscortsReady
             }
         }
 
+      
+
+        private static async Task UpdateProfileAsync(ComponentInteractionCreateEventArgs e, FieldEdit field)
+        {
+            var guild = GetInteractionGuild(e);
+            var profiles = await LoadAsync(guild);
+            var member = await Utils.GetMemberAsync(guild, e.Message.MentionedUsers.First().Id);
+            var profile = profiles[member.Id];
+
+
+            switch (field)
+            {
+                case FieldEdit.VRChatName:
+                    var fm = await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder { Content = "Please enter your answer below" });
+                    var nm = await e.Channel.GetNextMessageAsync(TimeSpan.FromMinutes(5));
+                    if (nm.TimedOut || nm.Result.Content.Equals("exit", StringComparison.OrdinalIgnoreCase)) { await fm.DeleteAsync(); break; }
+                    profile.vrcName = nm.Result.Content;
+                    await fm.DeleteAsync();
+                    break;
+                case FieldEdit.Gender:
+                    // Create the options for the user to pick
+                    var options = Utils.CreateSelectOptionsFromEnum(profile.serviceType, Enum.GetNames<GType>());
+                    // Make the dropdown
+                    var dropdown = new DiscordSelectComponent("genderdropdown", null, options, false, 1, 1);
+                    var builder = new DiscordMessageBuilder()
+                        .WithContent("Please selct your gender")
+                        .AddComponents(dropdown);
+                    var m = await builder.SendAsync(e.Channel); // Replace with any method of getting a channel. //
+                    var r = await m.WaitForSelectAsync("genderdropdown");
+                    profile.gender = Enum.Parse<GType>(r.Result.Interaction.Data.Values[0].Split('_').Last(), true);
+                    await m.DeleteAsync();
+                    break;
+                case FieldEdit.ServiceType:
+                    // Create the options for the user to pick
+                    options = Utils.CreateSelectOptionsFromEnum(profile.serviceType, Enum.GetNames<SType>());
+                    // Make the dropdown
+                    dropdown = new DiscordSelectComponent("servicedropdown", null, options, false, 1, 1);
+                    builder = new DiscordMessageBuilder()
+                        .WithContent("Please selct the service that you would like to provide")
+                        .AddComponents(dropdown);
+                    m = await builder.SendAsync(e.Channel); // Replace with any method of getting a channel. //
+                    r = await m.WaitForSelectAsync("servicedropdown");
+                    profile.serviceType = Enum.Parse<SType>(r.Result.Interaction.Data.Values[0].Split('_').Last(), true);
+                    await m.DeleteAsync();
+                    break;
+                case FieldEdit.EquipmentType:
+                    // Create the options for the user to pick
+                    options = Utils.CreateSelectOptionsFromEnum(profile.equipmentType, Enum.GetNames<EType>());                   
+                    // Make the dropdown
+                    dropdown = new DiscordSelectComponent("equipmentdropdown", null, options, false, 1, 1);
+                    builder = new DiscordMessageBuilder()
+                        .WithContent("Please selct your current setup")
+                        .AddComponents(dropdown);
+                    m = await builder.SendAsync(e.Channel); // Replace with any method of getting a channel. //
+                    r = await m.WaitForSelectAsync("equipmentdropdown");
+                    profile.equipmentType = Enum.Parse<EType>(r.Result.Interaction.Data.Values[0].Split('_').Last(), true);
+                    await m.DeleteAsync();
+                    break;
+                case FieldEdit.RoleType:
+                    // Create the options for the user to pick
+                    options = Utils.CreateSelectOptionsFromEnum(profile.roleType, Enum.GetNames<RType>());
+                    // Make the dropdown
+                    dropdown = new DiscordSelectComponent("roledropdown", null, options, false, 1, 1);
+                    builder = new DiscordMessageBuilder()
+                        .WithContent("Please selct the your prefered role")
+                        .AddComponents(dropdown);
+                    m = await builder.SendAsync(e.Channel); // Replace with any method of getting a channel. //
+                    r = await m.WaitForSelectAsync("roledropdown");
+                    profile.roleType = Enum.Parse<RType>(r.Result.Interaction.Data.Values[0].Split('_').Last(), true);
+                    await m.DeleteAsync();
+                    break;
+                case FieldEdit.PreferedBodyTypes:
+                    // Create the options for the user to pick
+                    options = Utils.CreateSelectOptionsFromEnum(profile.bodyTypes, Enum.GetNames<GType>());
+                    // Make the dropdown
+                    dropdown = new DiscordSelectComponent("bodydropdown", null, options, false, 1, 1);
+                    builder = new DiscordMessageBuilder()
+                        .WithContent("Please selct prefered body type")
+                        .AddComponents(dropdown);
+                    m = await builder.SendAsync(e.Channel); // Replace with any method of getting a channel. //
+                    r = await m.WaitForSelectAsync("bodydropdown");
+                    profile.bodyTypes = Enum.Parse<GType>(r.Result.Interaction.Data.Values[0].Split('_').Last(), true);
+                    await m.DeleteAsync();
+                    break;
+                case FieldEdit.AvailableTimes:
+                    fm = await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder { Content = "What times are you available?" });
+                    nm = await e.Channel.GetNextMessageAsync(TimeSpan.FromMinutes(5));
+                    if (nm.TimedOut || nm.Result.Content.Equals("exit", StringComparison.OrdinalIgnoreCase)) break;
+                    profile.timesAvailable = nm.Result.Content;
+                    await fm.DeleteAsync();
+                    break;
+                case FieldEdit.KinksFetishes:
+                    fm = await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder { Content = "What are some of your Kink's and Fetishes?" });
+                    nm = await e.Channel.GetNextMessageAsync(TimeSpan.FromMinutes(5));
+                    if (nm.TimedOut || nm.Result.Content.Equals("exit", StringComparison.OrdinalIgnoreCase)) break;
+                    profile.kinksAndFetishes = nm.Result.Content;
+                    await fm.DeleteAsync();
+                    break;
+                case FieldEdit.DoDonts:
+                    fm = await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder { Content = "What are some of your Do's and Dont's?" });
+                    nm = await e.Channel.GetNextMessageAsync(TimeSpan.FromMinutes(5));
+                    if (nm.TimedOut || nm.Result.Content.Equals("exit", StringComparison.OrdinalIgnoreCase)) break;
+                    profile.doAndDonts = nm.Result.Content;
+                    await fm.DeleteAsync();
+                    break;
+                case FieldEdit.JoinReson:
+                    fm = await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder { Content = "Why did you decied to be come and escort?" });
+                    nm = await e.Channel.GetNextMessageAsync(TimeSpan.FromMinutes(5));
+                    if (nm.TimedOut || nm.Result.Content.Equals("exit", StringComparison.OrdinalIgnoreCase)) break;
+                    profile.ReasonForJoining = nm.Result.Content;
+                    await fm.DeleteAsync();
+                    break;
+                case FieldEdit.AbountMe:
+                    fm = await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder { Content = "Tell us a little bit about you." });
+                    nm = await e.Channel.GetNextMessageAsync(TimeSpan.FromMinutes(5));
+                    if (nm.TimedOut || nm.Result.Content.Equals("exit", StringComparison.OrdinalIgnoreCase)) break;
+                    profile.AboutMe = nm.Result.Content;
+                    await fm.DeleteAsync();
+                    break;
+                case FieldEdit.TipLink:
+                    fm = await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder { Content = "Please enter a link to receive tips." });
+                    nm = await e.Channel.GetNextMessageAsync(TimeSpan.FromMinutes(5));
+                    if (nm.TimedOut || nm.Result.Content.Equals("exit", StringComparison.OrdinalIgnoreCase)) break;
+                    profile.tipLink = nm.Result.Content;
+                    await fm.DeleteAsync();
+                    break;
+                case FieldEdit.ProfileImage:
+                    fm = await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder { Content = "Please enter a link or drop and image you would like to set as your profile image." });
+                    nm = await e.Channel.GetNextMessageAsync(TimeSpan.FromMinutes(5));
+                    if (nm.TimedOut || nm.Result.Content.Equals("exit", StringComparison.OrdinalIgnoreCase)) break;
+                    profile.AvatarUrl = !string.IsNullOrEmpty(nm.Result.Content) ?  nm.Result.Content.Equals("unset", StringComparison.OrdinalIgnoreCase) ? nm.Result.Author.AvatarUrl : nm.Result.Content : nm.Result.Attachments.Count >= 1 ? nm.Result.Attachments[0].Url : nm.Result.Author.AvatarUrl;
+                    await fm.DeleteAsync();
+                    break;
+            }
+            profiles[e.Message.MentionedUsers.First().Id] = profile;
+            await SaveAsync(guild, profiles);
+            await e.Message.DeleteAsync();
+            var msg = await member.SendMessageAsync(await ProfileToEmbed(guild, profile));
+
+            await Task.CompletedTask;
+        }
+        
+
         private static async Task RequestEditAsync(ComponentInteractionCreateEventArgs e, Profile? profile)
         {
             var member = await Utils.GetMemberAsync(e.Guild, e.Message.MentionedUsers.First().Id);
-            var msg = await member.SendMessageAsync(await ProfileToEmbed(e.Guild, profile));            
-            var ch = msg.Channel;
-            reask:
-
-            var msg2 = await ch.SendMessageAsync("Please enter the number of the field that you would like to edit. or click one of the buttons above");
-            var res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-            if (!res.TimedOut)
-            {
-                if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                int.TryParse(res.Result.Content, out int index);
-                switch (index)
-                {
-                    case 1:
-                        await ch.SendMessageAsync("Please enter your vrchat name or enter **exit** to cancel");
-                        res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-                        if(!res.TimedOut)
-                        {
-                            if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                            profile.vrcName = res.Result.Content;
-                        }
-                        break;
-                    case 2:
-                        await ch.SendMessageAsync("Please enter your gender or enter **exit** to cancel");
-                        res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-                        if (!res.TimedOut)
-                        {
-                            if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                            if (Enum.TryParse(res.Result.Content, true, out GType value))
-                                profile.gender = value;
-                            else
-                                profile.gender = GType.Unset;
-                        }
-                        break;
-                    case 3:
-                        await ch.SendMessageAsync("Please enter your service type or enter **exit** to cancel");
-                        res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-                        if (!res.TimedOut)
-                        {
-                            if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                            if (Enum.TryParse(res.Result.Content, true, out SType value))
-                                profile.serviceType = value;
-                            else
-                                profile.serviceType = SType.Unset;
-                        }
-                        break;
-                    case 4:
-                        await ch.SendMessageAsync("Please enter your equipment type or enter **exit** to cancel");
-                        res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-                        if (!res.TimedOut)
-                        {
-                            if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                            if (Enum.TryParse(res.Result.Content, true, out EType value))
-                                profile.equipmentType = value;
-                            else
-                                profile.equipmentType = EType.Unset;
-                        }
-                        break;
-                    case 5:
-                        await ch.SendMessageAsync("Please enter your role type or enter **exit** to cancel");
-                        res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-                        if (!res.TimedOut)
-                        {
-                            if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                            if (Enum.TryParse(res.Result.Content, true, out RType value))
-                                profile.roleType = value;
-                            else
-                                profile.roleType = RType.Unset;
-                        }
-                        break;
-                    case 6:
-                        await ch.SendMessageAsync("Please enter your body type prefered or enter **exit** to cancel");
-                        res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-                        if (!res.TimedOut)
-                        {
-                            if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                            if (Enum.TryParse(res.Result.Content, true, out GType value))
-                                profile.bodyTypes = value;
-                            else
-                                profile.bodyTypes = GType.Unset;
-                        }
-                        break;
-                    case 7:
-                        await ch.SendMessageAsync("Please enter your time available or enter **exit** to cancel");
-                        res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-                        if (!res.TimedOut)
-                        {
-                            if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                            profile.timesAvailable = res.Result.Content;
-                        }
-                        break;
-                    case 8:
-                        await ch.SendMessageAsync("Please enter your kink's & Fetishes or enter **exit** to cancel");
-                        res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-                        if (!res.TimedOut)
-                        {
-                            if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                            profile.kinksAndFetishes = res.Result.Content;
-                        }
-                        break;
-                    case 9:
-                        await ch.SendMessageAsync("Please enter your Do's & Dont's or enter **exit** to cancel");
-                        res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-                        if (!res.TimedOut)
-                        {
-                            if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                            profile.doAndDonts = res.Result.Content;
-                        }
-                        break;
-                    case 10:
-                        await ch.SendMessageAsync("Please enter your reason for joining or enter **exit** to cancel");
-                        res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-                        if (!res.TimedOut)
-                        {
-                            if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                            profile.ReasonForJoining = res.Result.Content;
-                        }
-                        break;
-                    case 11:
-                        await ch.SendMessageAsync("Please enter your abount me or enter **exit** to cancel");
-                        res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-                        if (!res.TimedOut)
-                        {
-                            if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                            profile.AboutMe = res.Result.Content;
-                        }
-                        break;
-                    case 12:
-                        await ch.SendMessageAsync("Please enter your profile image url or enter **exit** to cancel");
-                        res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-                        if (!res.TimedOut)
-                        {
-                            if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                            profile.AvatarUrl = res.Result.Content;
-                        }
-                        break;
-                    case 13:
-                        await ch.SendMessageAsync("Please enter your link to receive tips or enter **exit** to cancel");
-                        res = await ch.GetNextMessageAsync(TimeSpan.FromMinutes(5));
-                        if (!res.TimedOut)
-                        {
-                            if (res.Result.Content.Equals("exit", StringComparison.CurrentCultureIgnoreCase)) goto end;
-                            profile.tipLink = res.Result.Content;
-                        }
-                        break;
-
-                }
-                await msg.DeleteAsync();
-                msg = await member.SendMessageAsync(await ProfileToEmbed(e.Guild, profile));
-            }
-            goto reask;
-            end:
-            await ch.SendMessageAsync("Operation has ended");
-
+            var msg = await member.SendMessageAsync(await ProfileToEmbed(e.Guild, profile));
         }
     }
 }

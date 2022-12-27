@@ -65,4 +65,21 @@
         Rank4,
         Premium,
     }
+
+    public enum FieldEdit
+    {
+        VRChatName,
+        Gender,
+        ServiceType,
+        EquipmentType,
+        RoleType,
+        PreferedBodyTypes,
+        AvailableTimes,
+        KinksFetishes,
+        DoDonts,
+        JoinReson,
+        AbountMe,
+        TipLink,
+        ProfileImage
+    }
 }

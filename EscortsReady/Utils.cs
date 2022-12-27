@@ -312,5 +312,48 @@ namespace EscortsReady
             }
             return bmp;
         }
+
+        public static List<DiscordSelectComponentOption> CreateSelectOptionsFromEnum<T>(T current, IEnumerable<string> names)
+        {
+            var options = new List<DiscordSelectComponentOption>();
+
+            if (typeof(T).Equals(typeof(GType)))
+            {
+                var cur = (GType)(object)current;
+                foreach (var name in names)
+                {
+                    var curenum = Enum.Parse<GType>(name);
+                    options.Add(new DiscordSelectComponentOption(name, $"select_{typeof(T).Name}_{name}".ToLower().Replace(" ", string.Empty), null, cur == curenum));
+                }
+            }
+            if(typeof(T).Equals(typeof(SType)))
+            {
+                var cur = (SType)(object)current;
+                foreach (var name in names)
+                {
+                    var curenum = Enum.Parse<SType>(name);
+                    options.Add(new DiscordSelectComponentOption(name, $"select_{typeof(T).Name}_{name}".ToLower().Replace(" ", string.Empty), null, cur == curenum));
+                }
+            }
+            if (typeof(T).Equals(typeof(EType)))
+            {
+                var cur = (EType)(object)current;
+                foreach (var name in names)
+                {
+                    var curenum = Enum.Parse<EType>(name);
+                    options.Add(new DiscordSelectComponentOption(name, $"select_{typeof(T).Name}_{name}".ToLower().Replace(" ", string.Empty), null, cur == curenum));
+                }
+            }
+            if (typeof(T).Equals(typeof(RType)))
+            {
+                var cur = (RType)(object)current;
+                foreach (var name in names)
+                {
+                    var curenum = Enum.Parse<RType>(name);
+                    options.Add(new DiscordSelectComponentOption(name, $"select_{typeof(T).Name}_{name}".ToLower().Replace(" ", string.Empty), null, cur == curenum));
+                }
+            }
+            return options;
+        }
     }
 }

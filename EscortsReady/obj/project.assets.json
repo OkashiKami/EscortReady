@@ -809,10 +809,10 @@
           }
         }
       },
-      "Microsoft.Extensions.Configuration.Binder/2.1.0": {
+      "Microsoft.Extensions.Configuration.Binder/2.1.10": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.Configuration": "2.1.0"
+          "Microsoft.Extensions.Configuration": "2.1.1"
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.Extensions.Configuration.Binder.dll": {
@@ -1014,6 +1014,23 @@
         },
         "build": {
           "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.FeatureManagement/2.5.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Binder": "2.1.10",
+          "Microsoft.Extensions.Logging": "2.1.1"
+        },
+        "compile": {
+          "lib/net5.0/Microsoft.FeatureManagement.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net5.0/Microsoft.FeatureManagement.dll": {
+            "related": ".xml"
+          }
         }
       },
       "Microsoft.Graph/4.11.0": {
@@ -4623,16 +4640,16 @@
         "microsoft.extensions.configuration.azureappconfiguration.nuspec"
       ]
     },
-    "Microsoft.Extensions.Configuration.Binder/2.1.0": {
-      "sha512": "Fls0O54Ielz1DiVYpcmiUpeizN1iKGGI5yAWAoShfmUvMcQ8jAGOK1a+DaflHA5hN9IOKvmSos0yewDYAIY0ZA==",
+    "Microsoft.Extensions.Configuration.Binder/2.1.10": {
+      "sha512": "anSrDPFjcz6oBQjrul2vSHCg/wOZ2gJc1ZNzm03LtkA9S17x8xnkLaT599uuFnl6JSZJgQy4hoHVzt2+bIDc9w==",
       "type": "package",
-      "path": "microsoft.extensions.configuration.binder/2.1.0",
+      "path": "microsoft.extensions.configuration.binder/2.1.10",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/netstandard2.0/Microsoft.Extensions.Configuration.Binder.dll",
         "lib/netstandard2.0/Microsoft.Extensions.Configuration.Binder.xml",
-        "microsoft.extensions.configuration.binder.2.1.0.nupkg.sha512",
+        "microsoft.extensions.configuration.binder.2.1.10.nupkg.sha512",
         "microsoft.extensions.configuration.binder.nuspec"
       ]
     },
@@ -4884,6 +4901,23 @@
         "microsoft.extensions.primitives.7.0.0-rc.2.22472.3.nupkg.sha512",
         "microsoft.extensions.primitives.nuspec",
         "useSharedDesignerContext.txt"
+      ]
+    },
+    "Microsoft.FeatureManagement/2.5.1": {
+      "sha512": "ERbRjk0etZs4d5Pv17unfogO4iBwV2c/HoBt4jqIJmfbKbmTLV+GbjBPYzidIg2RgYIFi8yA+EoEapSAIOp19g==",
+      "type": "package",
+      "path": "microsoft.featuremanagement/2.5.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net5.0/Microsoft.FeatureManagement.dll",
+        "lib/net5.0/Microsoft.FeatureManagement.xml",
+        "lib/netcoreapp3.1/Microsoft.FeatureManagement.dll",
+        "lib/netcoreapp3.1/Microsoft.FeatureManagement.xml",
+        "lib/netstandard2.0/Microsoft.FeatureManagement.dll",
+        "lib/netstandard2.0/Microsoft.FeatureManagement.xml",
+        "microsoft.featuremanagement.2.5.1.nupkg.sha512",
+        "microsoft.featuremanagement.nuspec"
       ]
     },
     "Microsoft.Graph/4.11.0": {
@@ -10655,6 +10689,7 @@
       "Microsoft.Extensions.Azure >= 1.0.0",
       "Microsoft.Extensions.Configuration.CommandLine >= 7.0.0-rc.2.22472.3",
       "Microsoft.Extensions.Configuration.EnvironmentVariables >= 7.0.0-rc.2.22472.3",
+      "Microsoft.FeatureManagement >= 2.5.1",
       "Microsoft.Identity.Web >= 1.24.1",
       "Microsoft.Identity.Web.MicrosoftGraph >= 1.24.1",
       "Microsoft.Identity.Web.UI >= 1.16.0",
@@ -10779,6 +10814,10 @@
           "Microsoft.Extensions.Configuration.EnvironmentVariables": {
             "target": "Package",
             "version": "[7.0.0-rc.2.22472.3, )"
+          },
+          "Microsoft.FeatureManagement": {
+            "target": "Package",
+            "version": "[2.5.1, )"
           },
           "Microsoft.Identity.Web": {
             "target": "Package",

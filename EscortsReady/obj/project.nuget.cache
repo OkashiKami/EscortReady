@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "qRWssHIbfJwxwRJ8Xq4YQaBc0icXB+U8luVvp2ZWChxRPmimATVWDuI7YKDeSMA6Nl43Pj9nxy+1KHECcVblCw==",
+  "dgSpecHash": "ioQtEm55QOL4cf5kB3Amx0W2ucirFOPnDu4jIGoLylbEoH/WwddasIg39/ynXf1MUT78pod5dBXESmfeCK6/Zw==",
   "success": true,
   "projectFilePath": "F:\\Documents\\source\\repos\\EscortsReady\\EscortsReady\\EscortsReady.csproj",
   "expectedPackageFiles": [
@@ -46,7 +46,7 @@
     "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.extensions.configuration\\7.0.0-rc.2.22472.3\\microsoft.extensions.configuration.7.0.0-rc.2.22472.3.nupkg.sha512",
     "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\7.0.0-rc.2.22472.3\\microsoft.extensions.configuration.abstractions.7.0.0-rc.2.22472.3.nupkg.sha512",
     "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.extensions.configuration.azureappconfiguration\\5.1.0\\microsoft.extensions.configuration.azureappconfiguration.5.1.0.nupkg.sha512",
-    "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.extensions.configuration.binder\\2.1.0\\microsoft.extensions.configuration.binder.2.1.0.nupkg.sha512",
+    "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.extensions.configuration.binder\\2.1.10\\microsoft.extensions.configuration.binder.2.1.10.nupkg.sha512",
     "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.extensions.configuration.commandline\\7.0.0-rc.2.22472.3\\microsoft.extensions.configuration.commandline.7.0.0-rc.2.22472.3.nupkg.sha512",
     "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.extensions.configuration.environmentvariables\\7.0.0-rc.2.22472.3\\microsoft.extensions.configuration.environmentvariables.7.0.0-rc.2.22472.3.nupkg.sha512",
     "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\5.0.1\\microsoft.extensions.dependencyinjection.5.0.1.nupkg.sha512",
@@ -58,6 +58,7 @@
     "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\5.0.0\\microsoft.extensions.logging.abstractions.5.0.0.nupkg.sha512",
     "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.extensions.options\\5.0.0\\microsoft.extensions.options.5.0.0.nupkg.sha512",
     "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.extensions.primitives\\7.0.0-rc.2.22472.3\\microsoft.extensions.primitives.7.0.0-rc.2.22472.3.nupkg.sha512",
+    "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.featuremanagement\\2.5.1\\microsoft.featuremanagement.2.5.1.nupkg.sha512",
     "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.graph\\4.11.0\\microsoft.graph.4.11.0.nupkg.sha512",
     "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.graph.core\\2.0.5\\microsoft.graph.core.2.0.5.nupkg.sha512",
     "C:\\Users\\zbigm\\.nuget\\packages\\microsoft.identity.client\\4.42.0\\microsoft.identity.client.4.42.0.nupkg.sha512",

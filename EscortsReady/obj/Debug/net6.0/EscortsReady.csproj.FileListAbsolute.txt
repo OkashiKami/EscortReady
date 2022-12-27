@@ -424,3 +424,4 @@ F:\Documents\source\repos\EscortsReady\EscortsReady\obj\Debug\net6.0\refint\Esco
 F:\Documents\source\repos\EscortsReady\EscortsReady\obj\Debug\net6.0\EscortsReady.pdb
 F:\Documents\source\repos\EscortsReady\EscortsReady\obj\Debug\net6.0\EscortsReady.genruntimeconfig.cache
 F:\Documents\source\repos\EscortsReady\EscortsReady\obj\Debug\net6.0\ref\EscortsReady.dll
+F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Microsoft.FeatureManagement.dll

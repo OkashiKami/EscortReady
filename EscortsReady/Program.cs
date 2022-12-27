@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.FeatureManagement;
 using Microsoft.Graph;
-using Microsoft.Identity.Client.Extensions.Msal;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -13,6 +13,8 @@ using System.Text.Json;
 using Directory = System.IO.Directory;
 using File = System.IO.File;
 using WebApplication = Microsoft.AspNetCore.Builder.WebApplication;
+
+
 
 namespace EscortsReady
 {
@@ -37,11 +39,8 @@ namespace EscortsReady
         private static async Task SetupWebServer(params string[] args)
         {
             builder = WebApplication.CreateBuilder(args);
-            Configuration = builder.Configuration;
-            var root = new DirectoryInfo(Directory.GetCurrentDirectory()).Parent.FullName;
-            var path = Path.Combine(root, "devappsettings.user");
-            if (File.Exists(path))
-                Configuration.AddJsonFile(path);
+            Configuration = builder.Configuration;            
+            Configuration.AddAzureAppConfiguration(Configuration.GetValue<string>("Endpoints:EscortReadyAppConfig"));
             ConfigureServices(builder.Services);
             app = builder.Build();
             logger = app.Logger;
@@ -104,6 +103,7 @@ namespace EscortsReady
             });
             // Bind configuration "TestApp:Settings" section to the Settings object
             services.Configure<Settings>(builder.Configuration.GetSection("EscortReady:Settings"));
+            services.AddFeatureManagement();
         }
 
         private static async Task Configure(WebApplication app, IWebHostEnvironment env)

@@ -73,7 +73,18 @@ namespace EscortsReady.Controllers
             }
             return Redirect("/Home/Dashboard");
         }
-
+        [HttpGet]
+        public async Task<IActionResult> DashboardRemoveUserEntry(string id)
+        {
+            var settings = await Settings.LoadAsync(Session.CurrentGuild.source);
+            if (settings != null)
+            {
+                var ue = (List<DUser>)settings["UserEntries"];
+                ue.RemoveAt(int.Parse(id));
+                await Settings.SaveAsync(Session.CurrentGuild.source, settings);
+            }
+            return Redirect("/Home/Dashboard");
+        }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

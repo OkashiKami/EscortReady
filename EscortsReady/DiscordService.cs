@@ -24,8 +24,7 @@ namespace EscortsReady
         private int checkVRCCred;
         private ILogger Logger;
         public static DiscordClient Client { get; private set; }
-        public static DiscordGuild selectedGuild;
-
+        
 
 
         public DiscordService(ILogger logger)
@@ -147,9 +146,9 @@ namespace EscortsReady
 
         public static async Task<List<DiscordGuild>> MyGuildsAsync()
         {
-
-
-            return Client.Guilds.Select(x => x.Value).ToList();
+            var guilds = Client.Guilds.Select(x => x.Value).ToList();
+            var user = Session.CurrentUser;
+            return user == null ? guilds : guilds.Where(x => x.Members.ContainsKey(user.id)).ToList();
         }
     }
 }

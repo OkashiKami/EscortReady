@@ -2,93 +2,101 @@
 @{
     ViewData["Title"] = "Dashboard";
     var guilds = await DiscordService.MyGuildsAsync();
-    if(DiscordService.selectedGuild == null)
+    if (Session.CurrentGuild == null)
     {
-    <center><h1>Your Guild List</h1></center>
-    <div class="d-flex flex-wrap" style="margin-left: 5%; margin-top: 5%">
-                    <div class="d-flex flex-wrap">
-                    @{
-                for (int g = 0; g < guilds.Count; g++)
-                {
-                                    <div class="guildEntry">
-                                        <a class="btn" style="height: 100%; width: 100%; border-radius: inherit; background: #0000" asp-area="" asp-controller="Home" asp-action="DashboardSelectGuild" asp-route-id=@guilds[g].Id>
-                                            <h3>@guilds[g].Name</h3>
-                                            <img src=@guilds[g].IconUrl width="140" height="140" />
-                                        </a>
-                                    </div>
-                }
+        <center><h1>Your Guild List</h1></center>
+        <div class="d-flex flex-wrap" style="margin-left: 5%; margin-top: 5%">
+            <div class="d-flex flex-wrap">
+                @{
+                    for (int g = 0; g < guilds.Count; g++)
+                    {
+                        <div class="guildEntry">
+                            <a class="btn" style="height: 100%; width: 100%; border-radius: inherit; background: #0000" asp-area="" asp-controller="Home" asp-action="DashboardSelectGuild" asp-route-id=@guilds[g].Id>
+                                <h3>@guilds[g].Name</h3>
+                                <img src=@guilds[g].IconUrl width="140" height="140" />
+                            </a>
+                        </div>
                     }
-                    </div>
-    </div>
+                }
+            </div>
+        </div>
     }
-    else{
-    <center style="border-bottom: 3px solid black">
-                    <div class="guildEntry-selected">
-                        <a class="btn" style="height: 100%; width: 100%; border-radius: inherit; background: #0000" asp-area="" asp-controller="Home" asp-action="DashboardDeselectGuild">
-                            <img src=@DiscordService.selectedGuild.IconUrl width="32" height="32" />
-                            <h3>@DiscordService.selectedGuild.Name</h3>
-                            <p>@DiscordService.selectedGuild.Id</p>
-                        </a>
-                    </div>
-    </center>
-    <div>
-                    <table class="table table-bordered table-dark">
-                        <thead>
-                            <tr>
-                                <th scope="col" style="width: 20px">#</th>
-                                <th scope="col">Discord</th>
-                                <th scope="col">VRChat</th>
-                                <th scope="col">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @{
-                        var settings =  await Settings.LoadAsync(DiscordService.selectedGuild);
+    else
+    {
+        <center style="border-bottom: 3px solid black">
+            <div class="guildEntry-selected">
+                <a class="btn" style="height: 100%; width: 100%; border-radius: inherit; background: #0000" asp-area="" asp-controller="Home" asp-action="DashboardDeselectGuild">
+                    <img src=@Session.CurrentGuild.source.IconUrl width="32" height="32" />
+                    <h3>@Session.CurrentGuild.Name</h3>
+                    <p>@Session.CurrentGuild.Id</p>
+                </a>
+            </div>
+        </center>
+        <div>
+            <table class="table table-bordered table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 20px">#</th>
+                        <th scope="col">Discord</th>
+                        <th scope="col">VRChat</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var settings = await Settings.LoadAsync(Session.CurrentGuild.source);
                         if (settings != null)
                         {
-                            for (int i = 0; i < (int)settings["UserEntries"]; i++)
-                            {
-                                var uentry = DiscordService.selectedGuild.Members.Select(x => x.Value).ToList()[i];
-                                        <tr>
-                                            <th scope="row">1</th>
-                                            <td>
-                                                @uentry.Username;
-                                                <select name="pets" id="select_@i" onchange="OnUserEntryDiscordNameChanged(this);">
-                                                    <option value="">--Please choose a member--</option>
-                                                    @{
-                                                var members = await DiscordService.selectedGuild.GetAllMembersAsync();
-                                                foreach(var member in members)
-                                                {
-                                                    var memberid = member.Id;
-                                                    var membername = member.Username;
-                                                    <option value=@memberid>@membername</option>
-                                                }
-                                                    }
-                                                </select>   
-
-                                            </td>
-                                            <td>
-                                            <!--
-                                                <input type="text" ID="txt_@i" runat="server" onchange="OnUserEntryVRCNameChanged(this);" value=uentry.VRChatname() />
-                                                -->
-                                            </td>
-                                            <td><a class="btn btn-danger" asp-area="" asp-controller="Home" asp-action="DashboardRemoveUserEntry">X</a></td>
-                                </tr>
-
-                                //settings.UserEntries[i] = uentry;
+                            var ues = (List<DUser>)settings["UserEntries"];
+                            if(ues == null) {
+                                settings["UserEntries"] = new List<DUser>();
+                                ues = (List<DUser>)settings["UserEntries"];
                             }
-                            await Settings.SaveAsync(DiscordService.selectedGuild, settings);
+
+
+                            for (int i = 0; i < ((List<DUser>)settings["UserEntries"]).Count; i++)
+                            {
+                                var ue = ues[i];
+                                <tr>
+                                    <th scope="row">1</th>
+                                    <td>
+                                        @ue.Username();
+                                        <select name="pets" id="select_@i" onchange="OnUserEntryDiscordNameChanged(this);">
+                                            <option value="">--Please choose a member--</option>
+                                            @{
+                                                var members = await Session.CurrentGuild.source.GetAllMembersAsync();
+                                                foreach (var member in members.OrderBy(x => x.Username))
+                                                {
+                                                    <option value=@member.Id> @member.DisplayName [@member.Username # @member.Discriminator]</option>
+                                                }
+                                            }
+                                        </select>
+
+                                    </td>
+                                    <td>
+                                            <input type="text" ID="txt_@i" runat="server" onchange="OnUserEntryVRCNameChanged(this);" value=@ue.VRChatname() />
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="DashboardSaveUserEntry">Save</a>
+                                        <a class="btn btn-danger" asp-area="" asp-controller="Home" asp-action="DashboardRemoveUserEntry" asp-route-id=@i>X</a>
+                                        </td>
+                                </tr>
+                                ues[i] = ue;
+                            }
+
+                            settings["UserEntries"] = ues;
+                            await Settings.SaveAsync(Session.CurrentGuild.source, settings);
                         }
-                        }
-                            <tr>
-                                <th scope="row">3</th>
-                                <td colspan="2">Larry the Bird</td>
-                                <td>
-                                <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="DashboardAddUserEntry">Add</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-    </div>
+                    }
+                    <tr>
+                        <th scope="row">3</th>
+                        <td colspan="2">Larry the Bird</td>
+                        <td>
+                            <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="DashboardAddUserEntry">Add</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     }
 }

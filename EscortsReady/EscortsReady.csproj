@@ -8,16 +8,119 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="Resources\**" />
-		<Content Remove="Resources\**" />
-		<EmbeddedResource Remove="Resources\**" />
-		<None Remove="Resources\**" />
+		<Content Remove="Views\Home\Dashboard.cshtml" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Remove="Views\Home\Dashboard.cshtml" />
+	  <Compile Include="obj\Pages\Dashboard\accordion.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\alert.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\badge.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\barchart.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\button-group.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\button.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\cards.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\dashboard.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\datatable.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\dropdown.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\fontawesome.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\forgot-password.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\form.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\grid.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\index2.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\index3-horizontalmenu.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\index3.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\invoice.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\linechart.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\list-group.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\login.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\login2.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\login3.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\maps.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\media-object.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\media.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\modal.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\pagination.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\piechart.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\popovers.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\pricing.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\progressbar.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\register.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\register2.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\register3.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\register4.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\reset-pass.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\screenlock.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\screenlock2.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\starter.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\tab.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\table-basic.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\table-layout.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\themify.cshtml.cs" />
+	  <Compile Include="obj\Pages\Dashboard\typography.cshtml.cs" />
+	  <Compile Include="obj\Pages\Index.cshtml.cs" />
+	  <Compile Include="obj\Pages\Privacy.cshtml.cs" />
+	  <Compile Include="obj\Pages\Shared\Error\403.cshtml.cs" />
+	  <Compile Include="obj\Pages\Shared\Error\404.cshtml.cs" />
+	  <Compile Include="obj\Pages\Shared\Error\500.cshtml.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="obj\Pages\Dashboard\accordion.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\alert.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\badge.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\barchart.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\button-group.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\button.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\cards.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\dashboard.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\datatable.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\dropdown.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\fontawesome.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\forgot-password.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\form.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\grid.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\index2.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\index3-horizontalmenu.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\index3.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\invoice.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\linechart.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\list-group.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\login.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\login2.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\login3.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\maps.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\media-object.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\media.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\modal.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\pagination.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\piechart.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\popovers.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\pricing.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\progressbar.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\register.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\register2.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\register3.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\register4.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\reset-pass.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\screenlock.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\screenlock2.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\starter.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\tab.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\table-basic.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\table-layout.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\themify.cshtml" />
+	  <Content Include="obj\Pages\Dashboard\typography.cshtml" />
+	  <Content Include="obj\Pages\Index.cshtml" />
+	  <Content Include="obj\Pages\Shared\Error\403.cshtml" />
+	  <Content Include="obj\Pages\Shared\Error\404.cshtml" />
+	  <Content Include="obj\Pages\Shared\Error\500.cshtml" />
+	  <Content Include="obj\Pages\Shared\_Layout.cshtml" />
+	  <Content Include="obj\Pages\Shared\_ValidationScriptsPartial.cshtml" />
+	  <Content Include="obj\Pages\_ViewImports.cshtml" />
+	  <Content Include="obj\Pages\_ViewStart.cshtml" />
 	</ItemGroup>
 	<ItemGroup>
+		<None Include="obj\Pages\Shared\_Layout.cshtml.css" />
 		<None Include="Views\Home\Dashboard.cshtml" />
 		<None Include="Views\Home\Index.cshtml" />
 		<None Include="Views\Home\Privacy.cshtml" />

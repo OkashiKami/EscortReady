@@ -150,11 +150,11 @@ namespace EscortsReady
             var member = await Utils.GetMemberAsync(profile);
             mb.WithContent(member.Mention);
             mb.WithEmbed(embed);
-            mb.AddComponents(new[]
-            {
-                new DiscordButtonComponent(ButtonStyle.Primary, "escort_edit_submit", "Submit", false, new DiscordComponentEmoji("✅")),
-                new DiscordButtonComponent(ButtonStyle.Danger, "escort_edit_cancel", "Cancel", false, new DiscordComponentEmoji("❌")),
+            mb.AddComponents(new[] 
+            { 
+                new DiscordButtonComponent(ButtonStyle.Secondary, "escort_edit_field_1", "Submit", false, new DiscordComponentEmoji("✅")) 
             });
+            mb.AddComponents(new[] { new DiscordButtonComponent(ButtonStyle.Primary, "escort_edit_submit", "Submit", false, new DiscordComponentEmoji("✅")) });
             return mb;
         }
         public Profile? this[ulong key]
@@ -235,10 +235,7 @@ namespace EscortsReady
                         await SaveAsync(guild, profiles);
                         await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
                         break;
-                    case "escort_edit_cancel":
-
-
-                        break;
+                   
                 }
             }
             catch(Exception ex)

@@ -411,7 +411,6 @@ F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\zh-Hans\Mic
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\zh-Hant\Microsoft.CodeAnalysis.CSharp.resources.dll
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
-F:\Documents\source\repos\EscortsReady\EscortsReady\obj\Debug\net6.0\scopedcss\Pages\Shared\_Layout.cshtml.rz.scp.css
 F:\Documents\source\repos\EscortsReady\EscortsReady\obj\Debug\net6.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 F:\Documents\source\repos\EscortsReady\EscortsReady\obj\Debug\net6.0\scopedcss\projectbundle\EscortsReady.bundle.scp.css
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\Members\NamiTesting#9885_802974043334115339.json
@@ -424,3 +423,4 @@ F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\s
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\Exports\Escorts.png
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\Exports\EscortsHead.png
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\Exports\Heart.png
+F:\Documents\source\repos\EscortsReady\EscortsReady\obj\Debug\net6.0\scopedcss\obj\Pages\Shared\_Layout.cshtml.rz.scp.css

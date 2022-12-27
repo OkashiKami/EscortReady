@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "appConfig1": {
+      "type": "appConfig",
+      "connectionId": "OkashiTechAppConfig"
+    },
+    "storage1": {
+      "type": "storage",
+      "connectionId": "OkashiTechApStorage"
+    },
+    "secrets1": {
+      "type": "secrets",
+      "connectionId": "VaultUri"
+    }
+  }
+}

@@ -75,11 +75,11 @@ namespace EscortsReady
             var headEscortRole = Convert.ToUInt64(settings["escortManagementRole"]);
             var normalEscortRole = Convert.ToUInt64(settings["escortDefaultRole"]);
             //Create embed for the message 
-            var texture = await Utils.CreateEscortEmblem(Utils.CalculateRangking(profile), profile.isHead);
+            var texture = await Utils.CreateEscortEmblem(Utils.CalculateRangking(profile), profile);
             var embed = new DiscordEmbedBuilder();
             var m = await Utils.GetMemberAsync(profile);
             var mr = await Utils.GetRoleAsynce(msg.Channel.Guild, profile.isHead ? headEscortRole : normalEscortRole);
-            embed.WithAuthor($"{m.DisplayName} ({mr.Name})", $"https://{msg.Channel.Guild.Id}.com", $"https://cdn.discordapp.com/attachments/946818290003623989/1056710179271495680/EscortsReady.png");
+            embed.WithAuthor($"{m.DisplayName} ({mr.Name})", $"https://{msg.Channel.Guild.Id}.com", Storage.GetFileUrl("EscortsReady.png"));
             embed.WithThumbnail(texture);
             embed.AddField("VRChat Name", profile.vrcName, true);
             embed.AddField("Gender", profile.gender.ToString(), true);
@@ -94,7 +94,7 @@ namespace EscortsReady
             embed.AddField("About Them", profile.AboutMe);
             if (!string.IsNullOrEmpty(profile.AvatarUrl) && !profile.AvatarUrl.Equals(Utils.Unset, StringComparison.OrdinalIgnoreCase))
                 embed.WithImageUrl(profile.AvatarUrl);
-            embed.WithFooter("ERS", $"https://cdn.discordapp.com/attachments/946818290003623989/1056710179271495680/EscortsReady.png");
+            embed.WithFooter("ERS", Storage.GetFileUrl("EscortsReady.png"));
             await msg.ModifyAsync(async x =>
             {
                 x.WithAllowedMentions(Mentions.All);
@@ -104,7 +104,8 @@ namespace EscortsReady
 
                 x.AddComponents(new[]
                 {
-                    new DiscordButtonComponent(ButtonStyle.Primary, "escort_request", "Request", false, new DiscordComponentEmoji("📲")),
+
+                    new DiscordButtonComponent(ButtonStyle.Primary, "escort_request", "Request", !Utils.CanBeRequested(profile), new DiscordComponentEmoji("📲")),
                     new DiscordButtonComponent(ButtonStyle.Success, "escort_like", "Like", false, new DiscordComponentEmoji("👍")),
                     new DiscordButtonComponent(ButtonStyle.Danger, "escort_dislike", "Dislike", false, new DiscordComponentEmoji("👎")),
                     new DiscordButtonComponent(ButtonStyle.Primary, "escort_tip", "Tip", string.IsNullOrEmpty(profile.tipLink) || profile.tipLink.Equals(Utils.Unset, StringComparison.OrdinalIgnoreCase), new DiscordComponentEmoji(1030292832155619339)),
@@ -122,11 +123,11 @@ namespace EscortsReady
             var mb = new DiscordMessageBuilder();
             
             //Create embed for the message 
-            var texture = await Utils.CreateEscortEmblem(Utils.CalculateRangking(profile), profile.isHead);
+            var texture = await Utils.CreateEscortEmblem(Utils.CalculateRangking(profile), profile);
             var embed = new DiscordEmbedBuilder();
             var m = await Utils.GetMemberAsync(profile);
             var mr = await Utils.GetRoleAsynce(guild, profile.isHead ? headEscortRole : normalEscortRole);
-            embed.WithAuthor($"{m.DisplayName} ({mr.Name})", $"https://{guild.Id}.com", $"https://cdn.discordapp.com/attachments/946818290003623989/1056710179271495680/EscortsReady.png");
+            embed.WithAuthor($"{m.DisplayName} ({mr.Name})", $"https://{guild.Id}.com", Storage.GetFileUrl("EscortsReady.png"));
             embed.WithThumbnail(texture);
             
             embed.AddField("**1** VRChat Name", profile.vrcName, true);
@@ -147,7 +148,7 @@ namespace EscortsReady
             }
             embed.AddField("**13** tipLink", profile.tipLink);
 
-            embed.WithFooter("ERS (type exit to cancel)", $"https://cdn.discordapp.com/attachments/946818290003623989/1056710179271495680/EscortsReady.png");
+            embed.WithFooter("ERS (type exit to cancel)", Storage.GetFileUrl("EscortsReady.png"));
             mb.WithAllowedMentions(Mentions.All);
             var member = await Utils.GetMemberAsync(profile);
             mb.WithContent(member.Mention);
@@ -222,9 +223,71 @@ namespace EscortsReady
 
                 switch (e.Id)
                 {
-                    case "escort_request": break;
-                    case "escort_like": break;
-                    case "escort_dislike": break;
+                    case "escort_request":
+                        var escort = await Utils.GetMemberAsync(e.Guild, e.Message.MentionedUsers.First().Id);
+                        var client = await Utils.GetMemberAsync(e.Guild, e.Interaction.User.Id);
+
+                        profile.TimeSinceLastRequested = DateTime.Now;
+                        await SaveAsync(guild, profiles);
+                        await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
+
+
+                        TimerHelper _timerHelper = new TimerHelper();
+                        _timerHelper.TimerEvent += async (timer, state) =>
+                        {
+                            var requestTimeSpan = DateTime.Now - profile.TimeSinceLastRequested;
+                            if (requestTimeSpan.TotalHours >= 1)
+                            {
+                                await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
+                                _timerHelper.Stop();
+                            }
+                        };
+                        _timerHelper.Start(TimeSpan.FromSeconds(5));
+                        
+                        var mb = new DiscordMessageBuilder();
+                        mb.Content = $"⚠️ **Warning** ⚠️" +
+                            $"Hello {escort.Mention} you have been request by {client.Mention}." +
+                            $"Would you liek to accet or decline this request?";
+                        mb.WithAllowedMentions(Mentions.All);
+                        mb.AddComponents(new[]
+                        {
+                            new DiscordButtonComponent(ButtonStyle.Primary, "escort_accept_request", "Accept"),
+                            new DiscordButtonComponent(ButtonStyle.Danger, "escort_decline_request", "Declien"),
+                        });
+                        var msg = await escort.SendMessageAsync(mb);
+                        var rs = await msg.WaitForButtonAsync(TimeSpan.FromDays(1));
+                        if(rs.TimedOut)
+                        {
+                            await escort.SendMessageAsync("Hello, we notices that you havent replied to this message with in the 24h time frame, the request has been canceld.");
+                            await client.SendMessageAsync("Sorry the escort that you have request has not responed in 24h, the request has been canceld. you can try to request again in 15m");
+                            await msg.DeleteAsync();
+                            break;
+                        }
+                        switch(rs.Result.Id)
+                        {
+                            case "escort_accept_request":
+                                await client.SendMessageAsync("Coagulations, our escort has chosen to  accept your request they will be in touch with you in a few.");
+
+                                break;
+                            case "escort_decline_request":
+                                await client.SendMessageAsync("Sorry to inform you but the escort that you have request has chosen to decline your request. No further action will be taken.");
+                                profile.TimeSinceLastRequested = DateTime.Now.AddHours(1);
+                                await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
+                                break;
+                        }
+                        await msg.DeleteAsync();
+                        break;
+                    case "escort_like":
+                        profile = profiles[e.Message.MentionedUsers.First().Id];
+                        profile.likes++;
+                        await SaveAsync(guild, profiles);
+
+                        break;
+                    case "escort_dislike":
+                        profile = profiles[e.Message.MentionedUsers.First().Id];
+                        profile.dislikes--;
+                        await SaveAsync(guild, profiles);
+                        break;
                     case "escort_tip":
                         var m = await Utils.GetMemberAsync(guild, e.Interaction.User.Id);
                         await m.SendMessageAsync(profile.tipLink);
@@ -251,7 +314,7 @@ namespace EscortsReady
                         profile.doAndDonts = e.Message.Embeds.First().Fields[8].Value;
                         profile.ReasonForJoining = e.Message.Embeds.First().Fields[9].Value;
                         profile.AboutMe = e.Message.Embeds.First().Fields[10].Value;
-                        profile.tipLink = e.Message.Embeds.First().Fields[11].Value;
+                        profile.tipLink = e.Message.Embeds.First().Fields[12].Value;
                         if (e.Message.Embeds.First().Image != null)
                             profile.AvatarUrl = e.Message.Embeds.First().Image.Url.ToString();
                         
@@ -306,7 +369,7 @@ namespace EscortsReady
                     break;
                 case FieldEdit.Gender:
                     // Create the options for the user to pick
-                    var options = Utils.CreateSelectOptionsFromEnum(profile.serviceType, Enum.GetNames<GType>());
+                    var options = Utils.CreateSelectOptionsFromEnum(profile.gender, Enum.GetNames<GType>());
                     // Make the dropdown
                     var dropdown = new DiscordSelectComponent("genderdropdown", null, options, false, 1, 1);
                     var builder = new DiscordMessageBuilder()

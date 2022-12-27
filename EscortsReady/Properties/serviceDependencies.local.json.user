@@ -18,20 +18,20 @@
     }
   },
   "parameters": {
-    "appConfig1.subscriptionId": {
-      "Name": "appConfig1.subscriptionId",
-      "Type": "subscription",
-      "Value": "e3aace0c-1c96-457c-952a-d17493236d56"
+    "secrets2.resourceGroupName": {
+      "Name": "secrets2.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "OkashiTech"
     },
     "secrets2.subscriptionId": {
       "Name": "secrets2.subscriptionId",
       "Type": "subscription",
       "Value": "e3aace0c-1c96-457c-952a-d17493236d56"
     },
-    "secrets2.resourceGroupName": {
-      "Name": "secrets2.resourceGroupName",
-      "Type": "resourceGroup",
-      "Value": "OkashiTech"
+    "appConfig1.subscriptionId": {
+      "Name": "appConfig1.subscriptionId",
+      "Type": "subscription",
+      "Value": "e3aace0c-1c96-457c-952a-d17493236d56"
     },
     "storage1.resourceGroupName": {
       "Name": "storage1.resourceGroupName",

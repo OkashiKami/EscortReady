@@ -24,9 +24,10 @@
         public ulong messageID;
         public ulong memberID;
         public DateTime dateCreated;
-
+        public DateTime TimeSinceLastRequested;
         public int likes = 0;
         public int dislikes = 0;
         public bool isHead;
+
     }
 }

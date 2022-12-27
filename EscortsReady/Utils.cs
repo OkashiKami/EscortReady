@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Newtonsoft.Json;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -43,63 +44,49 @@ namespace EscortsReady
             return false;
         }
 
-        public static async Task<string> CreateEscortEmblem(Rank rank, bool isHead = false)
+        public static async Task<string> CreateEscortEmblem(Rank rank, Profile profile)
         {
+            Image escortIcon;
+            Image rankIcon;
+
             var rootdir = $"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory.FullName}\\Resources\\Exports";
             Directory.CreateDirectory(rootdir);
+            var tmpFile = $"{rootdir}\\tmp_{Utils.PrettyName(profile.name).Replace(" ", "").ToLower()}.png";
             using (var map = new Bitmap(1024, 1024))
             {
-                Image escortIcon;
                 try
                 {
-                    escortIcon = Image.FromFile(isHead ? $"{rootdir}\\EscortsHead.png" : $"{rootdir}\\Escorts.png");
-                }
-                catch (Exception ex)
-                {
-                    ReportException(ex);
-                    return default;
-                }
-
-                Image rankIcon;
-                try
-                {
-                    rankIcon = Image.FromFile($"{rootdir}\\Heart.png");
-                }
-                catch (Exception ex)
-                {
-
-                    ReportException(ex);
-                    return default;
-                }
-
-                using (var bitmap = new Bitmap(escortIcon.Width, escortIcon.Height))
-                {
-                    using (var canvas = Graphics.FromImage(bitmap))
+                    escortIcon = Image.FromStream(profile.isHead ? Storage.GetFileStream("EscortsHead.png") : Storage.GetFileStream("Escorts.png"));
+                    rankIcon = Image.FromStream(Storage.GetFileStream("Heart.png"));
+                    using (var bitmap = new Bitmap(escortIcon.Width, escortIcon.Height))
                     {
-                        var rankIconSize = 32;
-                        canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                        canvas.DrawImage(escortIcon, new Rectangle(0, 0, escortIcon.Width, escortIcon.Height));
-                        for (int i = 0; i < (int)rank; i++)
+                        using (var canvas = Graphics.FromImage(bitmap))
                         {
-                            var offset = (escortIcon.Width / 2) - ((rankIconSize / 2) * (int)rank);
-                            canvas.DrawImage(rankIcon,  new Rectangle(offset + (i * rankIconSize), escortIcon.Height - (rankIconSize * 5), rankIconSize, rankIconSize));
+                            var rankIconSize = 32;
+                            canvas.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                            canvas.DrawImage(escortIcon, new Rectangle(0, 0, escortIcon.Width, escortIcon.Height));
+                            for (int i = 0; i < (int)rank; i++)
+                            {
+                                var offset = (escortIcon.Width / 2) - ((rankIconSize / 2) * (int)rank);
+                                canvas.DrawImage(rankIcon,  new Rectangle(offset + (i * rankIconSize), escortIcon.Height - (rankIconSize * 5), rankIconSize, rankIconSize));
+                            }
+                            canvas.Save();
                         }
-
-
-                        canvas.Save();
+                        await Task.Delay(TimeSpan.FromSeconds(0.5f));
+                        if (File.Exists(tmpFile)) File.Delete(tmpFile);
+                        bitmap.Save(tmpFile, ImageFormat.Png);
+                        Storage.UploadFile(tmpFile);
+                        if (File.Exists(tmpFile)) File.Delete(tmpFile);
                     }
-                    try
-                    {
-                        if (File.Exists($"{rootdir}\\tmpImage.png"))
-                            File.Delete($"{rootdir}\\tmpImage.png");
-                        bitmap.Save($"{rootdir}\\tmpImage.png", System.Drawing.Imaging.ImageFormat.Png);
-                    }
-                    catch (Exception ex) { ReportException(ex); }
                 }
-
+                catch (Exception ex)
+                {
+                    ReportException(ex);
+                    return default;
+                }
             }
-            var imageurl = await PostImageToTmpServer($"{rootdir}\\tmpImage.png");
-            return imageurl;
+
+            return Storage.GetFileUrl(new FileInfo(tmpFile).Name);
         }
 
         private static async Task<string> PostImageToTmpServer(string originalFile)
@@ -164,7 +151,7 @@ namespace EscortsReady
         public static async Task<DiscordChannel> GetChannelAsync(Profile profile)
         {
             var server = await DiscordService.Client.GetGuildAsync(profile.serverID);
-            var channel = server.Channels[profile.channelID];
+            var channel = server.Channels.ContainsKey(profile.channelID) ? server.Channels[profile.channelID] : null;
             return channel;
         }
         public static async Task<DiscordChannel> GetChannelAsync(DiscordGuild server, ulong channelID)
@@ -180,9 +167,10 @@ namespace EscortsReady
         public static async Task<DiscordMessage> GetMessageAsync(Profile profile)
         {
             var server = await DiscordService.Client.GetGuildAsync(profile.serverID);
-            var channel = server.Channels[profile.channelID];
+            var channel = server.Channels.ContainsKey(profile.channelID) ? server.Channels[profile.channelID] : null;
+            if (channel == null) return null;
             DiscordMessage message = null;
-            try { message = await channel.GetMessageAsync(profile.messageID); } catch { }
+            try { message = await channel.GetMessageAsync(Convert.ToUInt64(profile.messageID)); } catch { }
             return message;
         }
 
@@ -354,6 +342,13 @@ namespace EscortsReady
                 }
             }
             return options;
+        }
+
+        public static bool CanBeRequested(Profile profile)
+        {
+            var requestTimeSpan = DateTime.Now - profile.TimeSinceLastRequested;
+            var resut = requestTimeSpan.TotalHours >= 1;
+            return resut;
         }
     }
 }

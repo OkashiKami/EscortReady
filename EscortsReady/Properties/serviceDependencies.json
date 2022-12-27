@@ -4,11 +4,6 @@
       "type": "appConfig",
       "connectionId": "EscortReadyAppConfig"
     },
-    "secrets2": {
-      "type": "secrets",
-      "connectionId": "EscortReadyVault",
-      "dynamicId": null
-    },
     "secrets1": {
       "type": "secrets",
       "connectionId": "EscortReadyVaultUri",
@@ -17,6 +12,10 @@
     "storage1": {
       "type": "storage",
       "connectionId": "EscortReadyStorageConnectionString"
+    },
+    "secrets2": {
+      "type": "secrets",
+      "connectionId": "EscortReadyVault"
     }
   }
 }

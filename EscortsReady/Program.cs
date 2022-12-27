@@ -128,8 +128,9 @@ namespace EscortsReady
             }
 
             // Retrieve the connection string
-            var appConfigConnectionString = builder.Configuration.GetValue<string>("EscortReadyAppConfig");
-            var storageConnectionString = builder.Configuration.GetValue<string>("EscortReadyStorageConnectionString");
+            var appConfigConnectionString = builder.Configuration.GetValue<string>("Endpoints:EscortReadyAppConfig");
+            var storageConnectionString = builder.Configuration.GetValue<string>("Endpoints:EscortReadyStorage");
+
             // Load configuration from Azure App Configuration
             builder.Configuration.AddAzureAppConfiguration(appConfigConnectionString);
             await Storage.Setup(storageConnectionString);

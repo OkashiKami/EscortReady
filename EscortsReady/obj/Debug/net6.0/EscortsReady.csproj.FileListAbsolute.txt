@@ -8,11 +8,7 @@ F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\M
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\OrbitalTestingGround\Members\NamiTesting#9885_802974043334115339.json
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\OrbitalTestingGround\Members\OkashiKami#9073_284913031572488194.json
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\OrbitalTestingGround\Members\PermissionEx#3656_1033106865283932190.json
-F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\settings.json
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\EscortsReady.staticwebassets.runtime.json
-F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\Exports\Escorts.png
-F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\Exports\EscortsHead.png
-F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\Resources\Exports\Heart.png
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\EscortsReady.exe
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\EscortsReady.deps.json
 F:\Documents\source\repos\EscortsReady\EscortsReady\bin\Debug\net6.0\EscortsReady.runtimeconfig.json

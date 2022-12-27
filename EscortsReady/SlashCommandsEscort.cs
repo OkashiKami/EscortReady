@@ -126,13 +126,15 @@ namespace EscortsReady
                         var profile = profileContainer[member.Key];
                         //Get or create the message that will hold the embed for this profile
                         var ch = await Utils.GetChannelAsync(profile);
-                        if(ch ==null) ch = (DiscordChannel)settings["escortProfileChannel"];
+                        if(ch ==null) ch = ctx.Guild.Channels[Convert.ToUInt64(settings["escortProfileChannel"])];
                         if (ch == null) throw new Exception($"The profile section of the settings for {ctx.Guild} has not been setup yet");
                         var msg = await Utils.GetMessageAsync(profile);
                         if (msg == null)
                         {
                             msg = await ch.SendMessageAsync("please wait...");
                             profile.messageID = msg.Id;
+                            profile.channelID = msg.Channel.Id;
+                            profile.serverID = ctx.Guild.Id;
                         }
                         profile = await EscortProfile.UpdateOrCreateProfileEmbedAsync(msg, profile);
                         if(profile != null)
@@ -163,13 +165,15 @@ namespace EscortsReady
                         var profile = profileContainer[member.Key];
                         //Get or create the message that will hold the embed for this profile
                         var ch = await Utils.GetChannelAsync(profile);
-                        if (ch == null) ch = (DiscordChannel)settings["escortProfileChannel"];
+                        if (ch == null) ch = ctx.Guild.Channels[Convert.ToUInt64(settings["escortProfileChannel"])];
                         if (ch == null) throw new Exception($"The profile section of the settings for {ctx.Guild} has not been setup yet");
                         var msg = await Utils.GetMessageAsync(profile);
                         if (msg == null)
                         {
                             msg = await ch.SendMessageAsync("please wait...");
                             profile.messageID = msg.Id;
+                            profile.channelID = msg.Channel.Id;
+                            profile.serverID = ctx.Guild.Id;
                         }
                         profile = await EscortProfile.UpdateOrCreateProfileEmbedAsync(msg, profile);
                         if (profile != null)
@@ -221,13 +225,15 @@ namespace EscortsReady
                     var profile = profileContainer[member.Id];
                     //Get or create the message that will hold the embed for this profile
                     var ch = await Utils.GetChannelAsync(profile);
-                    if (ch == null) ch = (DiscordChannel)settings["escortProfileChannel"];
+                    if (ch == null) ch = ctx.Guild.Channels[Convert.ToUInt64(settings["escortProfileChannel"])];
                     if (ch == null) throw new Exception($"The profile section of the settings for {ctx.Guild} has not been setup yet");
                     var msg = await Utils.GetMessageAsync(profile);
                     if (msg == null)
                     {
                         msg = await ch.SendMessageAsync("please wait...");
                         profile.messageID = msg.Id;
+                        profile.channelID = msg.Channel.Id;
+                        profile.serverID = ctx.Guild.Id;
                     }
                     profile = await EscortProfile.UpdateOrCreateProfileEmbedAsync(msg, profile);
                     if (profile != null)

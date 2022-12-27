@@ -3,12 +3,16 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Graph;
 using Microsoft.Identity.Client.Extensions.Msal;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using Directory = System.IO.Directory;
+using File = System.IO.File;
+using WebApplication = Microsoft.AspNetCore.Builder.WebApplication;
 
 namespace EscortsReady
 {
@@ -34,6 +38,10 @@ namespace EscortsReady
         {
             builder = WebApplication.CreateBuilder(args);
             Configuration = builder.Configuration;
+            var root = new DirectoryInfo(Directory.GetCurrentDirectory()).Parent.FullName;
+            var path = Path.Combine(root, "devappsettings.user");
+            if (File.Exists(path))
+                Configuration.AddJsonFile(path);
             ConfigureServices(builder.Services);
             app = builder.Build();
             logger = app.Logger;

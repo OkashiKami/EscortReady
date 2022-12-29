@@ -1,5 +1,4 @@
 ﻿using EscortReady;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EscortsReady.Controllers

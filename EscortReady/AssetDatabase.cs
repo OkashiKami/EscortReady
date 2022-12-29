@@ -1,12 +1,7 @@
 ﻿using DSharpPlus.Entities;
 using EscortsReady;
 using EscortsReady.Utilities;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.DependencyModel;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace EscortReady

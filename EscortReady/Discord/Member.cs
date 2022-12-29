@@ -2,7 +2,6 @@
 
 using DSharpPlus.Entities;
 using Newtonsoft.Json;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Text;
 using EscortsReady.Utilities;

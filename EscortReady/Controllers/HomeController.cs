@@ -3,7 +3,6 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
-using EscortsReady;
 using EscortsReady.Models;
 using EscortReady;
 

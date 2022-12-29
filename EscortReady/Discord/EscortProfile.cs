@@ -5,9 +5,6 @@ using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using EscortReady;
 using EscortsReady.Utilities;
-using Newtonsoft.Json;
-using System.Diagnostics.Metrics;
-using System.Text;
 
 namespace EscortsReady
 {
@@ -33,7 +30,7 @@ namespace EscortsReady
             var texture = await Utils.CreateEscortEmblem(Utils.CalculateRangking(profile), profile);
             var embed = new DiscordEmbedBuilder();
             var m = await Utils.GetMemberAsync(profile);
-            var mr = await Utils.GetRole(msg.Channel.Guild, profile.isHead ? headEscortRole : normalEscortRole);
+            var mr = Utils.GetRole(msg.Channel.Guild, profile.isHead ? headEscortRole : normalEscortRole);
             embed.WithAuthor($"{m.DisplayName} ({mr.Name})", $"https://{msg.Channel.Guild.Id}.com", Storage.GetFileUrl("EscortsReady.png"));
             embed.WithThumbnail(texture);
             embed.AddField("VRChat Name", profile.vrcName, true);
@@ -81,7 +78,7 @@ namespace EscortsReady
             var texture = await Utils.CreateEscortEmblem(Utils.CalculateRangking(profile), profile);
             var embed = new DiscordEmbedBuilder();
             var m = await Utils.GetMemberAsync(profile);
-            var mr = await Utils.GetRole(guild, profile.isHead ? headEscortRole : normalEscortRole);
+            var mr = Utils.GetRole(guild, profile.isHead ? headEscortRole : normalEscortRole);
             embed.WithAuthor($"{m.DisplayName} ({mr.Name})", $"https://{guild.Id}.com", Storage.GetFileUrl("EscortsReady.png"));
             embed.WithThumbnail(texture);
             
@@ -149,15 +146,15 @@ namespace EscortsReady
             {
                 var guild = GetInteractionGuild(e);
                 var settings = await AssetDatabase.LoadAsync<Settings>(guild);
-                var member = await Utils.GetMember(guild, e.Message.MentionedUsers.First().Id);
+                var member = Utils.GetMember(guild, e.Message.MentionedUsers.First().Id);
                 var escorts = await AssetDatabase.LoadAsync<Escorts>(guild);
                 var profile = escorts[member.Id];
 
                 switch (e.Id)
                 {
                     case "escort_request":
-                        var escort = await Utils.GetMember(e.Guild, e.Message.MentionedUsers.First().Id);
-                        var client = await Utils.GetMember(e.Guild, e.Interaction.User.Id);
+                        var escort = Utils.GetMember(e.Guild, e.Message.MentionedUsers.First().Id);
+                        var client = Utils.GetMember(e.Guild, e.Interaction.User.Id);
 
 
                         // Check if the user has made a request to an escort already
@@ -238,13 +235,13 @@ namespace EscortsReady
                         await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
                         break;
                     case "escort_tip":
-                        var m = await Utils.GetMember(guild, e.Interaction.User.Id);
+                        var m = Utils.GetMember(guild, e.Interaction.User.Id);
                         await m.SendMessageAsync(profile.tipLink);
                         break;
                     case "escort_edit":
                         var headEscortRole = Convert.ToUInt64(settings["escortManagementRole"]);
-                        m = await Utils.GetMember(guild, e.User.Id);
-                        var r = await Utils.GetRole(guild, headEscortRole);
+                        m = Utils.GetMember(guild, e.User.Id);
+                        var r = Utils.GetRole(guild, headEscortRole);
                         if (profile.memberID == m.Id || m.Roles.Contains(r))
                             await RequestEditAsync(e, profile);
                         break;
@@ -303,7 +300,7 @@ namespace EscortsReady
         {
             var guild = GetInteractionGuild(e);
             var escots = await AssetDatabase.LoadAsync<Escorts>(guild);
-            var member = await Utils.GetMember(guild, e.Message.MentionedUsers.First().Id);
+            var member = Utils.GetMember(guild, e.Message.MentionedUsers.First().Id);
             var profile = escots[member.Id];
 
 
@@ -442,7 +439,7 @@ namespace EscortsReady
 
         private static async Task RequestEditAsync(ComponentInteractionCreateEventArgs e, Profile? profile)
         {
-            var member = await Utils.GetMember(e.Guild, e.Message.MentionedUsers.First().Id);
+            var member = Utils.GetMember(e.Guild, e.Message.MentionedUsers.First().Id);
             var msg = await member.SendMessageAsync(await ProfileToEmbed(e.Guild, profile));
         }
 

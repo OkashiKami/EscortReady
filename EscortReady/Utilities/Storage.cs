@@ -1,9 +1,5 @@
 ﻿using Azure.Storage.Blobs;
 using DSharpPlus.Entities;
-using Newtonsoft.Json;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
 
 namespace EscortsReady.Utilities
 {

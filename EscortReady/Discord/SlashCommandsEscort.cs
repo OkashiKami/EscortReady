@@ -1,7 +1,6 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using EscortReady;
-using System.Threading.Channels;
 
 namespace EscortsReady
 {
@@ -104,7 +103,7 @@ namespace EscortsReady
                 if (settings.library.ContainsKey("escortManagementRole"))
                 {
                     var headEscortRole = Convert.ToUInt64(settings["escortManagementRole"]);
-                    var members = ctx.Guild.Members.ToList().FindAll(x => x.Value.Roles.Contains(Utils.GetRole(ctx.Guild, headEscortRole).Result));
+                    var members = ctx.Guild.Members.ToList().FindAll(x => x.Value.Roles.Contains(Utils.GetRole(ctx.Guild, headEscortRole)));
                     foreach (var member in members)
                     {
                         if (!escorts.HasKey(member.Key) || escorts[member.Key] == null)
@@ -112,7 +111,7 @@ namespace EscortsReady
                             // profile does not exsit so we need to create one 
                             var profile = EscortProfile.CreateProfile(ctx, member.Value);
                             //Create the message that will hold the embed for this profile
-                            var ch = await Utils.GetChannel(ctx.Guild, Convert.ToUInt64(settings["escortProfileChannel"]));
+                            var ch = Utils.GetChannel(ctx.Guild, Convert.ToUInt64(settings["escortProfileChannel"]));
                             var msg = await ch.SendMessageAsync("please wait...");
                             profile.channelID = ch.Id;
                             profile.messageID = msg.Id;
@@ -146,7 +145,7 @@ namespace EscortsReady
                 if(settings.library.ContainsKey("escortDefaultRole"))
                 {
                     var normalEscortRole = Convert.ToUInt64(settings["escortDefaultRole"]);
-                    var members = ctx.Guild.Members.ToList().FindAll(x => x.Value.Roles.Contains(Utils.GetRole(ctx.Guild, normalEscortRole).Result));
+                    var members = ctx.Guild.Members.ToList().FindAll(x => x.Value.Roles.Contains(Utils.GetRole(ctx.Guild, normalEscortRole)));
                     foreach (var member in members)
                     {
                         if (!escorts.HasKey(member.Key) || escorts[member.Key] == null)
@@ -154,7 +153,7 @@ namespace EscortsReady
                             // profile does not exsit so we need to create one 
                             var profile = EscortProfile.CreateProfile(ctx, member.Value);
                             //Create the message that will hold the embed for this profile
-                            var ch = await Utils.GetChannel(ctx.Guild, Convert.ToUInt64(settings["escortProfileChannel"]));
+                            var ch = Utils.GetChannel(ctx.Guild, Convert.ToUInt64(settings["escortProfileChannel"]));
                             var msg = await ch.SendMessageAsync("please wait...");
                             profile.channelID = ch.Id;
                             profile.messageID = msg.Id;
@@ -215,7 +214,7 @@ namespace EscortsReady
                     // profile does not exsit so we need to create one 
                     var profile = EscortProfile.CreateProfile(ctx, member);
                     //Create the message that will hold the embed for this profile
-                    var ch = await Utils.GetChannel(ctx.Guild, Convert.ToUInt64(settings["escortProfileChannel"]));
+                    var ch = Utils.GetChannel(ctx.Guild, Convert.ToUInt64(settings["escortProfileChannel"]));
                     var msg = await ch.SendMessageAsync("please wait...");
                     profile.channelID = ch.Id;
                     profile.messageID = msg.Id;

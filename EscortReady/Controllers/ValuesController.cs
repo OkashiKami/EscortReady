@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using EscortReady;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EscortsReady.Controllers
@@ -10,13 +11,13 @@ namespace EscortsReady.Controllers
         [HttpPost("UVRCU")]
         public async Task<object> UVRCUAsync(int index, string? name)
         {
-            var settings = await Settings.LoadAsync(Session.CurrentGuild.source);
+            var settings = await AssetDatabase.LoadAsync<Settings>(Session.CurrentGuild.source);
             if (settings != null)
             {
                 var ue = (List<DUser>)settings["UserEntries"];
                 ue[index].vrchatUsername = name;
                 settings["UserEntries"] = ue;
-                await Settings.SaveAsync(Session.CurrentGuild.source, settings);
+                await AssetDatabase.SaveAsync(Session.CurrentGuild.source, settings);
                 return ue[index];
             }
             return BadRequest();
@@ -24,7 +25,7 @@ namespace EscortsReady.Controllers
         [HttpPost("UDU")]
         public async Task<object> UDUAsync(int index, ulong id, string? username, string? discriminator, string? email)
         {
-            var settings = await Settings.LoadAsync(Session.CurrentGuild.source);
+            var settings = await AssetDatabase.LoadAsync<Settings>(Session.CurrentGuild.source);
             if (settings != null)
             {
                 var ue = (List<DUser>)settings["UserEntries"];
@@ -33,7 +34,7 @@ namespace EscortsReady.Controllers
                 ue[index].discriminator = discriminator;
                 ue[index].email = email;
                 settings["UserEntries"] = ue;
-                await Settings.SaveAsync(Session.CurrentGuild.source, settings);
+                await AssetDatabase.SaveAsync(Session.CurrentGuild.source, settings);
                 return ue[index];
             }
             return BadRequest();

@@ -9,6 +9,8 @@ using System.Security.Principal;
 using VRChat.API.Model;
 using DSharpPlus.Interactivity.Extensions;
 using EscortsReady;
+using EscortReady;
+using System.Diagnostics.Metrics;
 
 namespace EscortsReady.VRC
 {
@@ -94,7 +96,8 @@ namespace EscortsReady.VRC
                     {
                         case "_yes":
                             await btn.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
-                            var member = await Member.LoadAsync(ctx.Guild, x => x.id == ctx.Member.Id);
+                            var members = await AssetDatabase.LoadAsync<Members>(ctx.Guild);
+                            var member = members[ctx.Member.Id];
 
                             member.guildid = ctx.Guild.Id;
                             member.id = ctx.Member.Id;
@@ -109,12 +112,14 @@ namespace EscortsReady.VRC
                                 wb.AddEmbed(emb3);
                                 await ctx.EditResponseAsync(wb);
                                 await ctx.Member.GrantRoleAsync(role);
-                                await Member.SaveAsync(ctx.Guild, member);
+                                members[ctx.Member.Id] = member;
+                                await AssetDatabase.SaveAsync(ctx.Guild, members);
                                 await VRCAddThem(ctx, ctx.Member);
                             }
                             else
                             {
-                                await Member.SaveAsync(ctx.Guild, member);
+                                members[ctx.Member.Id] = member;
+                                await AssetDatabase.SaveAsync(ctx.Guild, members);
                                 await VRCAddThem(ctx, ctx.Member);
                                 emb3.WithDescription($"{ctx.Member.Username} vrchat _vrcUsername has been Updated!");
                                 wb.AddEmbed(emb3);
@@ -126,7 +131,6 @@ namespace EscortsReady.VRC
                             wb.AddEmbed(emb3);
                             await ctx.EditResponseAsync(wb);
                             //await UpdatePermissionsFile(ctx, true);
-                            await member.CloseAsync(ctx.Guild);
                             set = true;
                             break;
                         case "_no":
@@ -152,7 +156,8 @@ namespace EscortsReady.VRC
         {
             await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
             Program.logger.LogInformation($"{ctx}");
-            var _member = await Member.LoadAsync(ctx.Guild, x => x.id == member.Id);
+            var members = await AssetDatabase.LoadAsync<Members>(ctx.Guild);
+            var _member = members[member.Id];
             List<User> users = new List<User>();
             try
             {
@@ -267,7 +272,8 @@ namespace EscortsReady.VRC
                             emb3.WithDescription("Okay, Their discrod account has been linked.");
                             wb.AddEmbed(emb3);
                             await ctx.EditResponseAsync(wb);
-                            await _member.CloseAsync(ctx.Guild);
+                            members[_member.id] = _member;
+                            await AssetDatabase.SaveAsync(ctx.Guild, members);
                             //await UpdatePermissionsFile(ctx, true);
                             set = true;
                             break;
@@ -294,7 +300,8 @@ namespace EscortsReady.VRC
         public async Task Unlink(InteractionContext ctx)
         {
             await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-            var member = await Member.LoadAsync(ctx.Guild, x => x.id == ctx.Member.Id);
+            var members = await AssetDatabase.LoadAsync<Members>(ctx.Guild);
+            var member = members[ctx.Member.Id];
             var user = await VRChatService.GetUserByProfileURLAsync(member.vrcuserid);
             var emb = new DiscordWebhookBuilder();
             var button1 = new DiscordButtonComponent(ButtonStyle.Success, "_yes", "Yes");
@@ -359,7 +366,8 @@ namespace EscortsReady.VRC
                         emb3.WithDescription("Okay, Their discrod account has been linked.");
                         wb.AddEmbed(emb3);
                         await ctx.EditResponseAsync(wb);
-                        await member.CloseAsync(ctx.Guild);
+                        members[member.id] = member;
+                        await AssetDatabase.SaveAsync(ctx.Guild, members);
                         //await UpdatePermissionsFile(ctx, true);
                         break;
                     case "_no":
@@ -377,7 +385,8 @@ namespace EscortsReady.VRC
         public async Task UnlinkThem(InteractionContext ctx, [Option("DiscordUser", "The member you want to register")] DiscordUser member)
         {
             await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-            var _member = await Member.LoadAsync(ctx.Guild, x => x.id == member.Id);
+            var members = await AssetDatabase.LoadAsync<Members>(ctx.Guild);
+            var _member = members[member.Id];
             var user = await VRChatService.GetUserByProfileURLAsync(_member.vrcuserid);
             var emb = new DiscordWebhookBuilder();
             var button1 = new DiscordButtonComponent(ButtonStyle.Success, "_yes", "Yes");
@@ -441,7 +450,8 @@ namespace EscortsReady.VRC
                         emb3.WithDescription("Okay, Their discrod account has been unlinked.");
                         wb.AddEmbed(emb3);
                         await ctx.EditResponseAsync(wb);
-                        await _member.CloseAsync(ctx.Guild);
+                        members[_member.id] = _member;
+                        await AssetDatabase.SaveAsync(ctx.Guild, members);
                         //await UpdatePermissionsFile(ctx, true);
                         break;
                     case "_no":
@@ -462,7 +472,8 @@ namespace EscortsReady.VRC
         {
             await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
             Program.logger.LogInformation($"{ctx}");
-            var _member = await Member.LoadAsync(ctx.Guild, x => x.id == ctx.Member.Id);
+            var members = await AssetDatabase.LoadAsync<Members>(ctx.Guild);
+            var _member = members[ctx.Member.Id];
             var vrcuser = await VRChatService.GetUserByProfileURLAsync(_member.vrcuserid) ?? await VRChatService.GetUserByUsernameAsync(_member.vrcdisplayname) ?? await VRChatService.GetUserByDisplaynameAsync(_member.vrcdisplayname);
             if (vrcuser != default)
             {
@@ -505,7 +516,8 @@ namespace EscortsReady.VRC
 
             if (member != null)
             {
-                var _member = await Member.LoadAsync(ctx.Guild, x => x.id == member.Id);
+                var members = await AssetDatabase.LoadAsync<Members>(ctx.Guild);
+                var _member = members[member.Id];
                 var vrcuser = await VRChatService.GetUserByProfileURLAsync(_member.vrcuserid) ?? await VRChatService.GetUserByUsernameAsync(_member.vrcdisplayname) ?? await VRChatService.GetUserByDisplaynameAsync(_member.vrcdisplayname);
                 if (vrcuser != default)
                 {
@@ -589,7 +601,8 @@ namespace EscortsReady.VRC
                 await ctx.EditResponseAsync(builder);
                 return;
             }
-            var _member = await Member.LoadAsync(ctx.Guild, x => x.id == ctx.Member.Id);
+            var members = await AssetDatabase.LoadAsync<Members>(ctx.Guild);
+            var _member = members[ctx.Member.Id];
             var vrcuser = await VRChatService.GetUserByProfileURLAsync(_member.vrcuserid) ?? await VRChatService.GetUserByUsernameAsync(_member.vrcdisplayname) ?? await VRChatService.GetUserByDisplaynameAsync(_member.vrcdisplayname);
             if (vrcuser != default)
                 await VRChatService.SendEventInviteAsync(ctx.Guild, _member.id, vrcuser, async () =>
@@ -615,7 +628,8 @@ namespace EscortsReady.VRC
                 await ctx.CreateResponseAsync("Sorry you have not registered your VRChat name with me yet.");
                 return;
             }
-            var _member = await Member.LoadAsync(ctx.Guild, x => x.id == member.Id);
+            var members = await AssetDatabase.LoadAsync<Members>(ctx.Guild);
+            var _member = members[member.Id];
             var vrcuser = await VRChatService.GetUserByProfileURLAsync(_member.vrcuserid) ?? await VRChatService.GetUserByUsernameAsync(_member.vrcdisplayname) ?? await VRChatService.GetUserByDisplaynameAsync(_member.vrcdisplayname);
             if (vrcuser != default)
                 await VRChatService.SendEventInviteAsync(ctx.Guild, _member.id, vrcuser, async () => await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
@@ -646,7 +660,8 @@ namespace EscortsReady.VRC
                 }
                 else
                 {
-                    var mem = await Member.LoadAsync(ctx.Guild, x => x.id == _member.Id);
+                    var mems = await AssetDatabase.LoadAsync<Members>(ctx.Guild);
+                    var mem = mems[_member.Id];
                     var vrcuser = await VRChatService.GetUserByProfileURLAsync(mem.vrcuserid) ?? await VRChatService.GetUserByUsernameAsync(mem.vrcdisplayname) ?? await VRChatService.GetUserByDisplaynameAsync(mem.vrcdisplayname);
                     if (vrcuser != default)
                     {

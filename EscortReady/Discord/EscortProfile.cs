@@ -3,62 +3,16 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
+using EscortReady;
 using EscortsReady.Utilities;
 using Newtonsoft.Json;
-using System;
-using System.Collections;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
-using System.Drawing;
 using System.Text;
 
 namespace EscortsReady
 {
     internal class EscortProfile : FileData
     {
-        public Dictionary<ulong, Profile> library = new Dictionary<ulong, Profile>();
-        public static async Task<EscortProfile> LoadAsync(DiscordGuild guild)
-        {
-            var file = $"{rootdir}\\{guild.Name}_{guild.Id}\\Profiles.json";
-            Directory.CreateDirectory(new FileInfo(file).Directory.FullName);
-            EscortProfile settingsObject = null;
-            if (!File.Exists(file))
-            {
-                settingsObject = new EscortProfile();
-                return settingsObject;
-            }
-            using (var fs = File.OpenRead(file))
-            {
-                using (var sr = new StreamReader(fs, Encoding.Unicode))
-                {
-                    try
-                    {
-                        var json = await sr.ReadToEndAsync();
-                        settingsObject = JsonConvert.DeserializeObject<EscortProfile>(json, Utils.serializerSettings);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                        settingsObject = new EscortProfile();
-                    }
-                }
-            }
-            return settingsObject;
-        }
-        public static async Task SaveAsync(DiscordGuild guild, EscortProfile profileContainer)
-        {
-            var file = $"{rootdir}\\{guild.Name}_{guild.Id}\\Profiles.json";
-            Directory.CreateDirectory(new FileInfo(file).Directory.FullName);
-            using (var fs = File.Open(file, FileMode.Create))
-            {
-                using (var sw = new StreamWriter(fs, Encoding.Unicode))
-                {
-                    var json = JsonConvert.SerializeObject(profileContainer, Utils.serializerSettings);
-                    await sw.WriteAsync(json);
-                }
-            }
-        }
         public static Profile? CreateProfile(InteractionContext ctx, DiscordMember member)
         {
             var profile = new Profile();
@@ -69,17 +23,17 @@ namespace EscortsReady
             profile.dateCreated = DateTime.Now;
             return profile;
         }
-        public bool HasKey(ulong key) => library.ContainsKey(key);
+        
         public static async Task<Profile> UpdateOrCreateProfileEmbedAsync(DiscordMessage msg, Profile profile)
         {
-            var settings = await Settings.LoadAsync(msg.Channel.Guild);
+            var settings = await AssetDatabase.LoadAsync<Settings>(msg.Channel.Guild);
             var headEscortRole = Convert.ToUInt64(settings["escortManagementRole"]);
             var normalEscortRole = Convert.ToUInt64(settings["escortDefaultRole"]);
             //Create embed for the message 
             var texture = await Utils.CreateEscortEmblem(Utils.CalculateRangking(profile), profile);
             var embed = new DiscordEmbedBuilder();
             var m = await Utils.GetMemberAsync(profile);
-            var mr = await Utils.GetRoleAsynce(msg.Channel.Guild, profile.isHead ? headEscortRole : normalEscortRole);
+            var mr = await Utils.GetRole(msg.Channel.Guild, profile.isHead ? headEscortRole : normalEscortRole);
             embed.WithAuthor($"{m.DisplayName} ({mr.Name})", $"https://{msg.Channel.Guild.Id}.com", Storage.GetFileUrl("EscortsReady.png"));
             embed.WithThumbnail(texture);
             embed.AddField("VRChat Name", profile.vrcName, true);
@@ -106,7 +60,7 @@ namespace EscortsReady
                 x.AddComponents(new[]
                 {
 
-                    new DiscordButtonComponent(ButtonStyle.Primary, "escort_request", "Request", !Utils.CanBeRequested(profile), new DiscordComponentEmoji("📲")),
+                    new DiscordButtonComponent(ButtonStyle.Primary, "escort_request", "Request", false, new DiscordComponentEmoji("📲")),
                     new DiscordButtonComponent(ButtonStyle.Success, "escort_like", "Like", false, new DiscordComponentEmoji("👍")),
                     new DiscordButtonComponent(ButtonStyle.Danger, "escort_dislike", "Dislike", false, new DiscordComponentEmoji("👎")),
                     new DiscordButtonComponent(ButtonStyle.Primary, "escort_tip", "Tip", string.IsNullOrEmpty(profile.tipLink) || profile.tipLink.Equals(Utils.Unset, StringComparison.OrdinalIgnoreCase), new DiscordComponentEmoji(1030292832155619339)),
@@ -118,7 +72,7 @@ namespace EscortsReady
         }
         public static async Task<DiscordMessageBuilder> ProfileToEmbed(DiscordGuild guild, Profile profile)
         {
-            var settings = await Settings.LoadAsync(guild);
+            var settings = await AssetDatabase.LoadAsync<Settings>(guild);
             var headEscortRole = Convert.ToUInt64(settings["escortManagementRole"]);
             var normalEscortRole = Convert.ToUInt64(settings["escortDefaultRole"]);
             var mb = new DiscordMessageBuilder();
@@ -127,7 +81,7 @@ namespace EscortsReady
             var texture = await Utils.CreateEscortEmblem(Utils.CalculateRangking(profile), profile);
             var embed = new DiscordEmbedBuilder();
             var m = await Utils.GetMemberAsync(profile);
-            var mr = await Utils.GetRoleAsynce(guild, profile.isHead ? headEscortRole : normalEscortRole);
+            var mr = await Utils.GetRole(guild, profile.isHead ? headEscortRole : normalEscortRole);
             embed.WithAuthor($"{m.DisplayName} ({mr.Name})", $"https://{guild.Id}.com", Storage.GetFileUrl("EscortsReady.png"));
             embed.WithThumbnail(texture);
             
@@ -179,30 +133,7 @@ namespace EscortsReady
             mb.AddComponents(new[] { new DiscordButtonComponent(ButtonStyle.Primary, "escort_edit_submit", "Submit", false, new DiscordComponentEmoji("✅")) });
             return mb;
         }
-        public Profile? this[ulong key]
-        {
-            get
-            {
-                var hasKey = library.ContainsKey(key);
-                if (hasKey)
-                    return library[key];
-                else return null;
-            }
-            set
-            {
-                var hasKey = library.ContainsKey(key);
-                if (!hasKey && value != null)
-                    library.Add(key, value);
-                else if (hasKey && value != null)
-                    library[key] = value;
-            }
-        }
-        public void Remove(ulong key)
-        {
-            if (library.ContainsKey(key))
-                library.Remove(key);
-        }
-
+       
         private static DiscordGuild GetInteractionGuild(ComponentInteractionCreateEventArgs e)
         {
             var msgurl = e.Message.Embeds.First().Author.Url.ToString();
@@ -217,91 +148,108 @@ namespace EscortsReady
             try
             {
                 var guild = GetInteractionGuild(e);
-                var settings = await Settings.LoadAsync(guild);
-                var member = await Utils.GetMemberAsync(guild, e.Message.MentionedUsers.First().Id);
-                var profiles = await LoadAsync(guild);
-                var profile = profiles[member.Id];
+                var settings = await AssetDatabase.LoadAsync<Settings>(guild);
+                var member = await Utils.GetMember(guild, e.Message.MentionedUsers.First().Id);
+                var escorts = await AssetDatabase.LoadAsync<Escorts>(guild);
+                var profile = escorts[member.Id];
 
                 switch (e.Id)
                 {
                     case "escort_request":
-                        var escort = await Utils.GetMemberAsync(e.Guild, e.Message.MentionedUsers.First().Id);
-                        var client = await Utils.GetMemberAsync(e.Guild, e.Interaction.User.Id);
-
-                        profile.TimeSinceLastRequested = DateTime.Now;
-                        await SaveAsync(guild, profiles);
-                        await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
+                        var escort = await Utils.GetMember(e.Guild, e.Message.MentionedUsers.First().Id);
+                        var client = await Utils.GetMember(e.Guild, e.Interaction.User.Id);
 
 
-                        TimerHelper _timerHelper = new TimerHelper();
-                        _timerHelper.TimerEvent += async (timer, state) =>
+                        // Check if the user has made a request to an escort already
+                        if (!escorts.library.Any(x => x.Value.requestLists.Any(x => x.member.Id == client.Id)))
                         {
-                            var requestTimeSpan = DateTime.Now - profile.TimeSinceLastRequested;
-                            if (requestTimeSpan.TotalHours >= 1)
+                            Task.Factory.StartNew(async () =>
                             {
-                                await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
-                                _timerHelper.Stop();
-                            }
-                        };
-                        _timerHelper.Start(TimeSpan.FromSeconds(5));
-                        
-                        var mb = new DiscordMessageBuilder();
-                        mb.Content = $"⚠️ **Warning** ⚠️" +
-                            $"Hello {escort.Mention} you have been request by {client.Mention}." +
-                            $"Would you liek to accet or decline this request?";
-                        mb.WithAllowedMentions(Mentions.All);
-                        mb.AddComponents(new[]
-                        {
-                            new DiscordButtonComponent(ButtonStyle.Primary, "escort_accept_request", "Accept"),
-                            new DiscordButtonComponent(ButtonStyle.Danger, "escort_decline_request", "Declien"),
-                        });
-                        var msg = await escort.SendMessageAsync(mb);
-                        var rs = await msg.WaitForButtonAsync(TimeSpan.FromDays(1));
-                        if(rs.TimedOut)
-                        {
-                            await escort.SendMessageAsync("Hello, we notices that you havent replied to this message with in the 24h time frame, the request has been canceld.");
-                            await client.SendMessageAsync("Sorry the escort that you have request has not responed in 24h, the request has been canceld. you can try to request again in 15m");
-                            await msg.DeleteAsync();
-                            break;
-                        }
-                        switch(rs.Result.Id)
-                        {
-                            case "escort_accept_request":
-                                await client.SendMessageAsync("Coagulations, our escort has chosen to  accept your request they will be in touch with you in a few.");
+                                var escorts = await AssetDatabase.LoadAsync<Escorts>(guild);
+                                var profile = escorts[member.Id];
+                                while(profile.requestLists.Count > 0)
+                                {
+                                    var requestIndex = profile.requestLists.IndexOf(profile.requestLists.Find(x => x.member.Id == client.Id));
+                                    var ts = DateTime.Now - profile.requestLists[requestIndex].requestSubmitTime;
+                                    if(ts.TotalHours >= 1) profile.requestLists.RemoveAt(requestIndex);
+                                    await Task.Delay(500);
+                                }
+                                escorts[escort.Id] = profile;
+                                await AssetDatabase.SaveAsync(guild, escorts);
 
+                            }).GetAwaiter();
+                            var mb = new DiscordMessageBuilder();
+                            mb.Content = $"⚠️ **Warning** ⚠️" +
+                                $"Hello {escort.Mention} you have been request by {client.Mention}." +
+                                $"Would you liek to accet or decline this request?";
+                            mb.WithAllowedMentions(Mentions.All);
+                            mb.AddComponents(new[]
+                            {
+                                new DiscordButtonComponent(ButtonStyle.Primary, "escort_accept_request", "Accept"),
+                                new DiscordButtonComponent(ButtonStyle.Danger, "escort_decline_request", "Declien"),
+                            });
+                            var msg = await escort.SendMessageAsync(mb);
+
+
+                            var rs = await msg.WaitForButtonAsync(TimeSpan.FromDays(1));
+                            if (rs.TimedOut)
+                            {
+                                await escort.SendMessageAsync("Hello, we notices that you havent replied to this message with in the 24h time frame, the request has been canceld.");
+                                await client.SendMessageAsync("Sorry the escort that you have request has not responed in 24h, the request has been canceld. you can try to request again in 15m");
+                                await msg.DeleteAsync();
                                 break;
-                            case "escort_decline_request":
-                                await client.SendMessageAsync("Sorry to inform you but the escort that you have request has chosen to decline your request. No further action will be taken.");
-                                profile.TimeSinceLastRequested = DateTime.Now.AddHours(1);
-                                await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
-                                break;
+                            }
+                            switch (rs.Result.Id)
+                            {
+                                case "escort_accept_request":
+                                    await client.SendMessageAsync("Coagulations, our escort has chosen to  accept your request they will be in touch with you in a few.");
+                                    await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
+
+                                    break;
+                                case "escort_decline_request":
+                                    profile.requestLists.RemoveAt(profile.requestLists.IndexOf(profile.requestLists.Find(x => x.member.Id == client.Id)));
+                                    escorts[escort.Id] = profile;
+                                    await AssetDatabase.SaveAsync(guild, escorts);
+                                    await client.SendMessageAsync("Sorry to inform you but the escort that you have request has chosen to decline your request. No further action will be taken.");
+                                    await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
+                                   
+                                    break;
+                            }
+                            await msg.DeleteAsync();
                         }
-                        await msg.DeleteAsync();
+                        else
+                        {
+                            await e.Interaction.CreateFollowupMessageAsync(new DiscordFollowupMessageBuilder
+                            {
+                                Content = "Sorry it seam like you have already tried to make a request to one of our escorts please wait till one of them to replay or come back in a hour and try again."
+                            });
+                        }
                         break;
                     case "escort_like":
-                        profile = profiles[e.Message.MentionedUsers.First().Id];
+                        profile = escorts[e.Message.MentionedUsers.First().Id];
                         profile.likes++;
-                        await SaveAsync(guild, profiles);
-
+                        await AssetDatabase.SaveAsync(guild, escorts);
+                        await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
                         break;
                     case "escort_dislike":
-                        profile = profiles[e.Message.MentionedUsers.First().Id];
+                        profile = escorts[e.Message.MentionedUsers.First().Id];
                         profile.dislikes--;
-                        await SaveAsync(guild, profiles);
+                        await AssetDatabase.SaveAsync(guild, escorts);
+                        await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
                         break;
                     case "escort_tip":
-                        var m = await Utils.GetMemberAsync(guild, e.Interaction.User.Id);
+                        var m = await Utils.GetMember(guild, e.Interaction.User.Id);
                         await m.SendMessageAsync(profile.tipLink);
                         break;
                     case "escort_edit":
                         var headEscortRole = Convert.ToUInt64(settings["escortManagementRole"]);
-                        m = await Utils.GetMemberAsync(guild, e.User.Id);
-                        var r = await Utils.GetRoleAsynce(guild, headEscortRole);
+                        m = await Utils.GetMember(guild, e.User.Id);
+                        var r = await Utils.GetRole(guild, headEscortRole);
                         if (profile.memberID == m.Id || m.Roles.Contains(r))
                             await RequestEditAsync(e, profile);
                         break;
                     case "escort_edit_submit":
-                        profile =  profiles[e.Message.MentionedUsers.First().Id];
+                        profile =  escorts[e.Message.MentionedUsers.First().Id];
                         
                         
                         profile.vrcName = e.Message.Embeds.First().Fields[0].Value;
@@ -319,8 +267,8 @@ namespace EscortsReady
                         if (e.Message.Embeds.First().Image != null)
                             profile.AvatarUrl = e.Message.Embeds.First().Image.Url.ToString();
                         
-                        profiles[e.Message.MentionedUsers.First().Id] = profile;
-                        await SaveAsync(guild, profiles);
+                        escorts[e.Message.MentionedUsers.First().Id] = profile;
+                        await AssetDatabase.SaveAsync(guild, escorts);
                         await UpdateOrCreateProfileEmbedAsync(await Utils.GetMessageAsync(profile), profile);
                         await e.Message.DeleteAsync("Profile has been submitted");
                         await e.Channel.SendMessageAsync("Profile has been updated");
@@ -354,9 +302,9 @@ namespace EscortsReady
         private static async Task UpdateProfileAsync(ComponentInteractionCreateEventArgs e, FieldEdit field)
         {
             var guild = GetInteractionGuild(e);
-            var profiles = await LoadAsync(guild);
-            var member = await Utils.GetMemberAsync(guild, e.Message.MentionedUsers.First().Id);
-            var profile = profiles[member.Id];
+            var escots = await AssetDatabase.LoadAsync<Escorts>(guild);
+            var member = await Utils.GetMember(guild, e.Message.MentionedUsers.First().Id);
+            var profile = escots[member.Id];
 
 
             switch (field)
@@ -483,8 +431,8 @@ namespace EscortsReady
                     await fm.DeleteAsync();
                     break;
             }
-            profiles[e.Message.MentionedUsers.First().Id] = profile;
-            await SaveAsync(guild, profiles);
+            escots[e.Message.MentionedUsers.First().Id] = profile;
+            await AssetDatabase.SaveAsync(guild, escots);
             await e.Message.DeleteAsync();
             var msg = await member.SendMessageAsync(await ProfileToEmbed(guild, profile));
 
@@ -494,8 +442,29 @@ namespace EscortsReady
 
         private static async Task RequestEditAsync(ComponentInteractionCreateEventArgs e, Profile? profile)
         {
-            var member = await Utils.GetMemberAsync(e.Guild, e.Message.MentionedUsers.First().Id);
+            var member = await Utils.GetMember(e.Guild, e.Message.MentionedUsers.First().Id);
             var msg = await member.SendMessageAsync(await ProfileToEmbed(e.Guild, profile));
+        }
+
+        internal static async Task ResumeSessions(DiscordGuild guild)
+        {
+            var escorts = await AssetDatabase.LoadAsync<Escorts>(guild);
+            foreach (var profile in escorts.library)
+            {
+                Task.Factory.StartNew(async () =>
+                {
+                    while (escorts[profile.Key].requestLists.Count > 0)
+                    {
+                        foreach (var request in profile.Value.requestLists)
+                        {
+                            var ts = DateTime.Now - escorts[profile.Key].requestLists.Find(x => x.member.Id == request.member.Id).requestSubmitTime;
+                            if (ts.TotalHours >= 1) escorts[profile.Key].requestLists.RemoveAt(escorts[profile.Key].requestLists.IndexOf(request));
+                        }
+                        await AssetDatabase.SaveAsync(guild, escorts);
+                    }
+
+                }).GetAwaiter();
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ using EscortsReady;
 using File = System.IO.File;
 using Avatar = EscortsReady.Avatar;
 using HttpMethod = System.Net.Http.HttpMethod;
+using EscortReady;
 
 namespace EscortsReady.VRC
 {
@@ -104,10 +105,11 @@ namespace EscortsReady.VRC
         public static async Task SendEventInviteAsync(DiscordGuild guild, ulong? ownerid, User? user, Action? onSuccess = null)
         {
             if (!await LoginAsync()) return;
-            var _member = Member.LoadAsync(guild, x => x.vrcuserid == user.Id);
+            var members = await AssetDatabase.LoadAsync<Members>(guild);
+            var _member = members.Find(x => x.vrcuserid == user.Id);
             try
             {
-                var duser = await Member.LoadAsync(guild, x => x.id == ownerid);
+                var duser = members.Find(x => x.id == ownerid);
                 Program.logger.LogInformation(duser.vrcdisplayname);
 
                 var instanceid = $"{await worldid()}:{await instanceID()}~private({duser.id})~nonce({Guid.NewGuid()})";
@@ -128,7 +130,8 @@ namespace EscortsReady.VRC
         public static async Task<User?> SendFriendRequestAsync(DiscordMember discordMember, Action? onSuccess = null)
         {
             if (!await LoginAsync()) return default;
-            var member = await Member.LoadAsync(discordMember.Guild, x => x.id == discordMember.Id);
+            var members = await AssetDatabase.LoadAsync<Members>(discordMember.Guild);
+            var member = members.Find(x => x.id == discordMember.Id);
             try
             {
                 var user = await GetUserByIdAsync(member.vrcuserid);
@@ -161,7 +164,8 @@ namespace EscortsReady.VRC
         public static async Task<User?> SendUnFriendRequestAsync(DiscordMember discordMember, Action? onSuccess = null)
         {
             if (!await LoginAsync()) return default;
-            var _member = await Member.LoadAsync(discordMember.Guild, x => x.id == discordMember.Id);
+            var members = await AssetDatabase.LoadAsync<Members>(discordMember.Guild);
+            var _member = members.Find(x => x.id == discordMember.Id);
             var user = await GetUserByIdAsync(_member.vrcuserid);
             try
             {

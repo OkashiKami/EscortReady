@@ -1,16 +1,20 @@
 {
   "dependencies": {
-    "appConfig1": {
-      "type": "appConfig",
-      "connectionId": "OkashiTechAppConfig"
-    },
     "storage1": {
       "type": "storage",
-      "connectionId": "OkashiTechApStorage"
+      "connectionId": "EscortReadyStorage"
+    },
+    "appConfig1": {
+      "type": "appConfig",
+      "connectionId": "EscortReadyAppConfig"
+    },
+    "compute.appService1": {
+      "group": "connections",
+      "type": "compute.appService"
     },
     "secrets1": {
       "type": "secrets",
-      "connectionId": "VaultUri"
+      "connectionId": "EscortReadyKeyVault"
     }
   }
 }

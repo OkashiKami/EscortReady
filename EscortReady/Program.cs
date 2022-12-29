@@ -1,3 +1,5 @@
+
+using Azure.Core.Diagnostics;
 using Azure.Identity;
 using EscortsReady.Utilities;
 using Microsoft.AspNetCore.Authentication;
@@ -5,42 +7,67 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using VRChat.API.Client;
+using HttpMethod = System.Net.Http.HttpMethod;
 
 namespace EscortsReady
 {
     public class Program
     {
-       public static CancellationToken ct;
-       private static WebApplicationBuilder builder;
-       public static ConfigurationManager configuration { get; private set; }
-       public static WebApplication app { get; private set; }
-       public static ILogger logger { get; private set; }
+        public static CancellationToken ct;
+        private static WebApplicationBuilder builder;
+        public static ConfigurationManager configuration { get; private set; }
+        public static WebApplication app { get; private set; }
+        public static ILogger logger { get; private set; }
 
         public static async Task Main(params string[] args)
         {
             Console.Title = "EscortReady";
+            
+            Directory.CreateDirectory(Utils.tmpDire);
+            Directory.GetFiles(Utils.tmpDire).ToList().ForEach(f => File.Delete(f));
+            Directory.Delete(Utils.tmpDire, true);
+            Directory.CreateDirectory(Utils.tmpDire);
+            
+
             await SetupWebServer(args);
             Task.Run(async () => await DiscordService.StartAsync(logger)).GetAwaiter();
             await Task.Delay(TimeSpan.FromSeconds(3));
             await app.RunAsync(ct);
             ct = new CancellationToken(true);
         }
+
         private static async Task SetupWebServer(params string[] args)
         {
             builder = WebApplication.CreateBuilder(args);
             configuration = builder.Configuration;
-            
+
             var keyVaultEndpoint = new Uri(configuration.GetValue<string>("Endpoints:EscortReadyKeyVault"));
             var azureAppConfigurationEnpoint = configuration.GetValue<string>("Endpoints:EscortReadyAppConfig");
             var storageConnectionString = configuration.GetValue<string>("Endpoints:EscortReadyStorage");
 
-            configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
+
+            // Setup a listener to monitor logged events.
+            using AzureEventSourceListener listener = AzureEventSourceListener.CreateConsoleLogger();
+            DefaultAzureCredentialOptions options = new DefaultAzureCredentialOptions()
+            {
+                Diagnostics =
+                {
+                    LoggedHeaderNames = { "x-ms-request-id" },
+                    LoggedQueryParameters = { "api-version" },
+                    IsLoggingContentEnabled = true
+                }
+            };
+
+
+            try { configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential()); } catch { }
             // Add Azure App Configuration to the container.
             if (!string.IsNullOrEmpty(azureAppConfigurationEnpoint))
             {
@@ -72,12 +99,13 @@ namespace EscortsReady
             }
             builder.Services.AddAzureAppConfiguration();
             // Add services to the container.
-            builder.Services.AddRazorPages();
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            builder.Services.AddControllers();
+            // Add services to the container.
             builder.Services.AddAzureClients(clientBuilder =>
             {
-                clientBuilder.AddBlobServiceClient(configuration["OkashiTechApStorage:blob"], preferMsi: true);
-                clientBuilder.AddQueueServiceClient(configuration["OkashiTechApStorage:queue"], preferMsi: true);
+                clientBuilder.AddBlobServiceClient(configuration["OkashiTechApStorage:blob"]);
+                clientBuilder.AddQueueServiceClient(configuration["OkashiTechApStorage:queue"]);
             });
             builder.Services.AddAuthentication(o =>
             {
@@ -112,6 +140,7 @@ namespace EscortsReady
                 o.ClaimActions.MapJsonKey(ClaimTypes.Name, "username");
                 o.ClaimActions.MapJsonKey(ClaimTypes.Hash, "discriminator");
                 o.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+
                 o.AccessDeniedPath = "/";
                 o.Events = new OAuthEvents
                 {
@@ -128,8 +157,6 @@ namespace EscortsReady
                 };
 
             });
-            // Bind configuration "TestApp:Settings" section to the Settings object
-            builder.Services.Configure<Settings>(builder.Configuration.GetSection("EscortReady:Settings"));
             builder.Services.AddFeatureManagement();
             await Storage.Setup(storageConnectionString);
             app = builder.Build();
@@ -137,23 +164,21 @@ namespace EscortsReady
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Error");
+                app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseAzureAppConfiguration();
+            
             app.UseRouting();
             app.UseAuthorization();
-            app.MapRazorPages();
             app.MapControllerRoute(
-              name: "default",
-              pattern: "{controller=Home}/{action=Index}/{id?}");
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
         }
     }
 }
-
 
 
 

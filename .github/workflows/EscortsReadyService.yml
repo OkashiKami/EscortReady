@@ -5,10 +5,10 @@ on:
     - main
 env:
   AZURE_WEBAPP_NAME: EscortsReadyService
-  AZURE_WEBAPP_PACKAGE_PATH: EscortsReady\published
+  AZURE_WEBAPP_PACKAGE_PATH: EscortReady\published
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 6.0.x
-  WORKING_DIRECTORY: EscortsReady
+  WORKING_DIRECTORY: EscortReady
 jobs:
   build:
     runs-on: windows-latest

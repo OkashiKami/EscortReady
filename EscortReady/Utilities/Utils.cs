@@ -1,5 +1,6 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using EscortReady;
 using EscortsReady.Utilities;
 using EscortsReady.VRC;
 using Newtonsoft.Json;
@@ -16,6 +17,8 @@ namespace EscortsReady
 {
     internal class Utils
     {
+        public static string tmpDire => $"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory.FullName}\\Resources\\tmp";
+
         public static JsonSerializerSettings serializerSettings
         {
             get
@@ -38,7 +41,7 @@ namespace EscortsReady
         {
             ulong devid = 284913031572488194;
             if (ctx.Member.Id == devid) return true;
-            var settings = await Settings.LoadAsync(ctx.Guild);
+            var settings = await AssetDatabase.LoadAsync<Settings>(ctx.Guild);
             if (allow.HasFlag(EAM.Head))
                 if (ctx.Member.Roles.Contains(settings["escortManagementRole"])) return true;
             if (allow.HasFlag(EAM.General))
@@ -51,9 +54,8 @@ namespace EscortsReady
             Image escortIcon;
             Image rankIcon;
 
-            var rootdir = $"{new FileInfo(Assembly.GetEntryAssembly().Location).Directory.FullName}\\Resources\\Exports";
-            Directory.CreateDirectory(rootdir);
-            var tmpFile = $"{rootdir}\\tmp_{Utils.PrettyName(profile.name).Replace(" ", "").ToLower()}.png";
+            
+            var tmpFile = $"{tmpDire}\\tmp_{Utils.PrettyName(profile.name).Replace(" ", "").ToLower()}.png";
             using (var map = new Bitmap(1024, 1024))
             {
                 try
@@ -75,10 +77,8 @@ namespace EscortsReady
                             canvas.Save();
                         }
                         await Task.Delay(TimeSpan.FromSeconds(0.5f));
-                        if (File.Exists(tmpFile)) File.Delete(tmpFile);
                         bitmap.Save(tmpFile, ImageFormat.Png);
-                        Storage.UploadFile(tmpFile);
-                        if (File.Exists(tmpFile)) File.Delete(tmpFile);
+                        await Storage.UploadFileAsync(tmpFile);
                     }
                 }
                 catch (Exception ex)
@@ -87,8 +87,8 @@ namespace EscortsReady
                     return default;
                 }
             }
-
-            return Storage.GetFileUrl(new FileInfo(tmpFile).Name);
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            return Storage.GetFileUrl(tmpFile);
         }
 
         private static async Task<string> PostImageToTmpServer(string originalFile)
@@ -121,7 +121,16 @@ namespace EscortsReady
             }
 
             var creator = await DiscordService.Client.GetUserAsync(devid);
-            DiscordService.Client.Guilds.ToList().ForEach(async x => await x.Value.Members.ToList().Find(x => x.Key == devid).Value.SendMessageAsync($"[EscortsReady]\n{ex}"));
+            var guilds = DiscordService.Client.Guilds;
+            foreach (var g in guilds.Values)
+            {
+                var mcreator = await g.GetMemberAsync(creator.Id);
+                if(mcreator != null)
+                {
+                    await mcreator.SendMessageAsync($"{ex}");
+                    break;
+                }
+            }
         }
 
         public static Rank CalculateRangking(Profile profile)
@@ -145,64 +154,87 @@ namespace EscortsReady
             var member = server.Members[profile.memberID];
             return member;
         }
-        public static async Task<DiscordMember> GetMemberAsync(DiscordGuild server, ulong memberID)
+        public static DiscordMember? GetMember(DiscordGuild server, ulong memberID)
         {
             var member = server.Members[memberID];
             return member;
         }
-        public static async Task<DiscordChannel> GetChannelAsync(Profile profile)
+        public static async Task<DiscordChannel?> GetChannelAsync(Profile profile)
         {
             var server = await DiscordService.Client.GetGuildAsync(profile.serverID);
             var channel = server.Channels.ContainsKey(profile.channelID) ? server.Channels[profile.channelID] : null;
-            return channel;
+            return channel != null ? channel : null;
         }
-        public static async Task<DiscordChannel> GetChannelAsync(DiscordGuild server, ulong channelID)
+        public static DiscordChannel GetChannel(DiscordGuild server, ulong channelID)
         {
             var channel = server.Channels[channelID];
             return channel;
         }
-        public static async Task<DiscordRole> GetRoleAsynce(DiscordGuild server, ulong roleID)
+        public static DiscordRole? GetRole(DiscordGuild server, ulong roleID)
         {
             var role = server.Roles[roleID];
             return role;
         }
-        public static async Task<DiscordMessage> GetMessageAsync(Profile profile)
+        public static async Task<DiscordMessage?> GetMessageAsync(Profile profile)
         {
             var server = await DiscordService.Client.GetGuildAsync(profile.serverID);
             var channel = server.Channels.ContainsKey(profile.channelID) ? server.Channels[profile.channelID] : null;
             if (channel == null) return null;
-            DiscordMessage message = null;
+            DiscordMessage? message = null;
             try { message = await channel.GetMessageAsync(Convert.ToUInt64(profile.messageID)); } catch { }
             return message;
         }
 
         public static async Task CheckAndRemoveInvalidProfilesAsync(DiscordGuild guild)
         {
-            var settings = await Settings.LoadAsync(guild);
-            var profileContainer = await EscortProfile.LoadAsync(guild);
-            var headEscortRole = Convert.ToUInt64(settings["escortManagementRole"]);
-            var normalEscortRole = Convert.ToUInt64(settings["escortDefaultRole"]);
-            var _her = await GetRoleAsynce(guild, headEscortRole);
-            var _ger = await GetRoleAsynce(guild, normalEscortRole);
+            var settings = await AssetDatabase.LoadAsync<Settings>(guild);
+            var escorts = await AssetDatabase.LoadAsync<Escorts>(guild);
 
-
-            foreach (var key in profileContainer.library.Keys)
+            if (settings.library.ContainsKey("escortManagementRole"))
             {
-                var item = profileContainer[key];
-            
-                //check if profile member is in the server;
-                var member = await GetMemberAsync(guild, key);
-                if (member == null)
+                var headEscortRole = Convert.ToUInt64(settings["escortManagementRole"]);
+                var _her = GetRole(guild, headEscortRole);
+                foreach (var key in escorts.library.Keys)
                 {
-                    profileContainer.Remove(key);
-                    continue;
+                    var item = escorts[key];
+
+                    //check if profile member is in the server;
+                    var member = GetMember(guild, key);
+                    if (member == null)
+                    {
+                        escorts.Remove(key);
+                        continue;
+                    }
+                    // check if member still hase the role 
+                    var mr = member.Roles.ToList();
+                    if (!mr.Contains(_her))
+                        escorts.Remove(key);
                 }
-                // check if member still hase the role 
-                var mr = member.Roles.ToList();
-                if (!mr.Contains(_her) && !mr.Contains(_ger))
-                    profileContainer.Remove(key);
             }
-            await EscortProfile.SaveAsync(guild, profileContainer);
+
+            if (settings.library.ContainsKey("escortDefaultRole"))
+            {
+                var normalEscortRole = Convert.ToUInt64(settings["escortDefaultRole"]);
+                var _ner = GetRole(guild, normalEscortRole);
+                foreach (var key in escorts.library.Keys)
+                {
+                    var item = escorts[key];
+
+                    //check if profile member is in the server;
+                    var member = GetMember(guild, key);
+                    if (member == null)
+                    {
+                        escorts.Remove(key);
+                        continue;
+                    }
+                    // check if member still hase the role 
+                    var mr = member.Roles.ToList();
+                    if (!mr.Contains(_ner))
+                        escorts.Remove(key);
+                }
+            }
+
+            await AssetDatabase.SaveAsync<Escorts>(guild, escorts);
         }
         public static string PrettyName(string value) => Regex.Replace(value, @"[^0-9a-zA-Z\._]", "");
         public static string CalculateMD5(byte[] imgBytes)
@@ -237,9 +269,7 @@ namespace EscortsReady
         {
             //Debug.LogAsync(textToEncode, header: false);
             var image = await EncodeTextAsync(textToEncode);
-
             image.Save(fileName, ImageFormat.Png);
-
             return image;
         }
         private static async Task<Bitmap> EncodeTextAsync(string input)
@@ -344,13 +374,6 @@ namespace EscortsReady
                 }
             }
             return options;
-        }
-
-        public static bool CanBeRequested(Profile profile)
-        {
-            var requestTimeSpan = DateTime.Now - profile.TimeSinceLastRequested;
-            var resut = requestTimeSpan.TotalHours >= 1;
-            return resut;
         }
     }
 }

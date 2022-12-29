@@ -4,6 +4,7 @@ using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.Entities;
 using EscortsReady.VRC;
+using EscortReady;
 
 namespace EscortsReady
 {
@@ -11,7 +12,6 @@ namespace EscortsReady
     {
         private SlashCommandsExtension slash;
         private InteractivityExtension interact;
-        private ulong _guildid;
         private string? _token;
         private string? _vrcusername;
         private string? _vrcpassword;
@@ -112,7 +112,14 @@ namespace EscortsReady
                 Task.Factory.StartNew(async () =>
                 {
                     if (e.Id.StartsWith("escort_")) await EscortProfile.HandelInteractionAsync(s, e);
-                });
+                }).GetAwaiter();
+            };
+            Client.GuildAvailable += async (s, e) =>
+            {
+                var escots = await AssetDatabase.LoadAsync<Escorts>(e.Guild);
+                await AssetDatabase.SaveAsync(e.Guild, escots);
+                await EscortProfile.ResumeSessions(e.Guild);
+
             };
         }
         public async Task RunAsync()
@@ -135,7 +142,6 @@ namespace EscortsReady
         {   
             if (Client != null)
                 Client.DisconnectAsync();
-            Client = null;
             GC.SuppressFinalize(this);
         }       
 

@@ -1,6 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using DSharpPlus.Entities;
 using Newtonsoft.Json;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
@@ -8,8 +9,8 @@ namespace EscortsReady.Utilities
 {
     internal class Storage
     {
-        private static BlobServiceClient client;
-        private static BlobContainerClient container;
+        private static BlobServiceClient? client;
+        private static BlobContainerClient? container;
 
         public static async Task Setup(string? storageConnectionString)
         {
@@ -20,40 +21,47 @@ namespace EscortsReady.Utilities
                 container = await client.CreateBlobContainerAsync(containerName);
             Console.WriteLine($"Azure Storage Ready!");
         }
-        public static string? GetFileUrl(string filename)
+        public static async Task UploadFileAsync(string filename, DiscordGuild? guild = null)
         {
+            var info = new FileInfo(filename);
+            var root = guild != null ? Path.Combine("EscortReady", $"{guild.Name}_{guild.Id}", info.Name) : Path.Combine("EscortReady", "Resources",  info.Name);
+            filename = string.Join("", filename.ToCharArray().Where(x => x < 127));
+            // Convert object;
+            var blobClient = container.GetBlobClient(root);
+            var metadata = new Dictionary<string, string>();
+            metadata.Add("Name", info.Name);
+            metadata.Add("DateCrated", DateTime.Now.ToString());
+            await blobClient.UploadAsync(path: filename, metadata: metadata);
+            blobClient.SetMetadata(metadata);
+        }        
+        public static string? GetFileUrl(string filename, DiscordGuild? guild = null)
+        {
+            var info = new FileInfo(filename);
+            var root = guild != null ? Path.Combine("EscortReady", $"{guild.Name}_{guild.Id}", info.Name) : Path.Combine("EscortReady", "Resources", info.Name);
             filename = string.Join("", filename.ToCharArray().Where(x => x < 127));
             var blobs = container.GetBlobs().ToList();
-            var file = blobs.Count > 0 ? blobs.Find(x => x.Name.Contains(filename)) : null;
+            var file = blobs.Count > 0 ? blobs.Find(x => string.Equals(x.Name, root.Replace("\\", "/"), StringComparison.OrdinalIgnoreCase)) : null;
             if (file == null) return GetFileUrl("EscortsReady.png");
             var blobClient = container.GetBlobClient(file.Name);
             return blobClient.Uri.ToString();
 
         }
-        public static Stream? GetFileStream(string filename)
+        public static Stream? GetFileStream(string filename, DiscordGuild? guild = null)
         {
+            var info = new FileInfo(filename);
+            var root = guild != null ? Path.Combine("EscortReady", $"{guild.Name}_{guild.Id}", info.Name) : Path.Combine("EscortReady", "Resources", info.Name);
             filename = string.Join("", filename.ToCharArray().Where(x => x < 127));
             var blobs = container.GetBlobs().ToList();
-            var file = blobs.Count > 0 ?
-                blobs.Find(x => x.Name.Contains(filename)) : null;
-            var blobClient = container.GetBlobClient(file.Name);
-            return blobClient.Download().Value.Content;
-
-        }
-
-
-        public static async Task UploadFile(string filename)
-        {
-            filename = string.Join("", filename.ToCharArray().Where(x => x < 127));
-            // Convert object;
-            var fi = new FileInfo(filename);
-            var blobClient = container.GetBlobClient(fi.Name);
-            var metadata = new Dictionary<string, string>();
-            metadata.Add("Name", fi.Name);
-            metadata.Add("DateCrated", DateTime.Now.ToString());
-            blobClient.Upload(path: filename, metadata: metadata);
-            blobClient.SetMetadata(metadata);
+            var file = blobs.Count > 0 ? blobs.Find(x => string.Equals(x.Name, root.Replace("\\", "/"), StringComparison.OrdinalIgnoreCase)) : null;
+            if (file != null)
+            {
+                var blobClient = container.GetBlobClient(file.Name);
+                var ms = new MemoryStream();
+                blobClient.Download().Value.Content.CopyTo(ms);
+                ms.Position = 0;
+                return ms;
+            }
+            return null;
         }
     }
-
 }

@@ -5,6 +5,7 @@ using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using EscortsReady;
 using EscortsReady.Models;
+using EscortReady;
 
 namespace EscortsReady.Controllers
 {
@@ -64,24 +65,24 @@ namespace EscortsReady.Controllers
         [HttpGet]
         public async Task<IActionResult> DashboardAddUserEntry()
         {
-            var settings = await  Settings.LoadAsync(Session.CurrentGuild.source);
+            var settings = await  AssetDatabase.LoadAsync<Settings>(Session.CurrentGuild.source);
             if (settings != null)
             {
                 var ue = (List<DUser>)settings["UserEntries"];
                     ue.Add(new DUser());
-                await Settings.SaveAsync(Session.CurrentGuild.source, settings);
+                await AssetDatabase.SaveAsync(Session.CurrentGuild.source, settings);
             }
             return Redirect("/Home/Dashboard");
         }
         [HttpGet]
         public async Task<IActionResult> DashboardRemoveUserEntry(string id)
         {
-            var settings = await Settings.LoadAsync(Session.CurrentGuild.source);
+            var settings = await AssetDatabase.LoadAsync<Settings>(Session.CurrentGuild.source);
             if (settings != null)
             {
                 var ue = (List<DUser>)settings["UserEntries"];
                 ue.RemoveAt(int.Parse(id));
-                await Settings.SaveAsync(Session.CurrentGuild.source, settings);
+                await AssetDatabase.SaveAsync(Session.CurrentGuild.source, settings);
             }
             return Redirect("/Home/Dashboard");
         }

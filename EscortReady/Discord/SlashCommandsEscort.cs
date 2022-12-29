@@ -1,5 +1,6 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using EscortReady;
 using System.Threading.Channels;
 
 namespace EscortsReady
@@ -13,9 +14,9 @@ namespace EscortsReady
             if (!await Utils.CheckPerms(ctx)) return;
             try
             {
-                var settings = await Settings.LoadAsync(ctx.Guild);
+                var settings = await AssetDatabase.LoadAsync<Settings>(ctx.Guild);
                 settings["escortManagementRole"] = role.Id;
-                await Settings.SaveAsync(ctx.Guild, settings);
+                await AssetDatabase.SaveAsync(ctx.Guild, settings);
 
 
                 var dwb = new DiscordWebhookBuilder();
@@ -34,9 +35,9 @@ namespace EscortsReady
             if (!await Utils.CheckPerms(ctx, EAM.Head)) return;
             try
             {
-                var settings = await Settings.LoadAsync(ctx.Guild);
+                var settings = await AssetDatabase.LoadAsync<Settings>(ctx.Guild);
                 settings["escortDefaultRole"] = role.Id;
-                await Settings.SaveAsync(ctx.Guild, settings);
+                await AssetDatabase.SaveAsync(ctx.Guild, settings);
 
 
                 var dwb = new DiscordWebhookBuilder();
@@ -55,9 +56,9 @@ namespace EscortsReady
             if (!await Utils.CheckPerms(ctx, EAM.Head)) return;
             try
             {
-                var settings = await Settings.LoadAsync(ctx.Guild);
+                var settings = await AssetDatabase.LoadAsync<Settings>(ctx.Guild);
                 settings["escortAnnouncmentChannel"] = channel.Id;
-                await Settings.SaveAsync(ctx.Guild, settings);
+                await AssetDatabase.SaveAsync(ctx.Guild, settings);
 
                 var dwb = new DiscordWebhookBuilder();
                 dwb.WithContent($"**{channel.Name}** has been set as the escorts default announcment role ✅");
@@ -75,9 +76,9 @@ namespace EscortsReady
             if (!await Utils.CheckPerms(ctx, EAM.Head)) return;
             try
             {
-                var settings = await Settings.LoadAsync(ctx.Guild);
+                var settings = await AssetDatabase.LoadAsync<Settings>(ctx.Guild);
                 settings["escortProfileChannel"] = channel.Id;
-                await Settings.SaveAsync(ctx.Guild, settings);
+                await AssetDatabase.SaveAsync(ctx.Guild, settings);
 
                 var dwb = new DiscordWebhookBuilder();
                 dwb.WithContent($"**{channel.Name}** has been set as the escorts default prfile role ✅");
@@ -96,91 +97,95 @@ namespace EscortsReady
             if (!await Utils.CheckPerms(ctx, EAM.Head)) return;
             try
             {
-                var settings = await Settings.LoadAsync(ctx.Guild);
+                var settings = await AssetDatabase.LoadAsync<Settings>(ctx.Guild);
                 await Utils.CheckAndRemoveInvalidProfilesAsync(ctx.Guild);
-                var profileContainer = await EscortProfile.LoadAsync(ctx.Guild);
+                var escorts = await AssetDatabase.LoadAsync<Escorts>(ctx.Guild);
                 // do profile for head escorts
-                var headEscortRole = Convert.ToUInt64(settings["escortManagementRole"]);
-                var normalEscortRole = Convert.ToUInt64(settings["escortDefaultRole"]);
-
-                var members = ctx.Guild.Members.ToList().FindAll(x => x.Value.Roles.Contains(Utils.GetRoleAsynce(ctx.Guild, headEscortRole).Result));
-                foreach (var member in members)
+                if (settings.library.ContainsKey("escortManagementRole"))
                 {
-                    if (!profileContainer.HasKey(member.Key) || profileContainer[member.Key] == null)
+                    var headEscortRole = Convert.ToUInt64(settings["escortManagementRole"]);
+                    var members = ctx.Guild.Members.ToList().FindAll(x => x.Value.Roles.Contains(Utils.GetRole(ctx.Guild, headEscortRole).Result));
+                    foreach (var member in members)
                     {
-                        // profile does not exsit so we need to create one 
-                        var profile = EscortProfile.CreateProfile(ctx, member.Value);
-                        //Create the message that will hold the embed for this profile
-                        var ch =  await Utils.GetChannelAsync(ctx.Guild, Convert.ToUInt64(settings["escortProfileChannel"]));
-                        var msg = await ch.SendMessageAsync("please wait...");
-                        profile.channelID = ch.Id;
-                        profile.messageID = msg.Id;
-                        profile.isHead = true;
-                        profile  = await EscortProfile.UpdateOrCreateProfileEmbedAsync(msg, profile);
-                        if (profile != null)
-                            profileContainer[member.Key] = profile;
-                    }
-                    else
-                    {
-                        // profile does not exsit so we need to create one 
-                        var profile = profileContainer[member.Key];
-                        //Get or create the message that will hold the embed for this profile
-                        var ch = await Utils.GetChannelAsync(profile);
-                        if(ch ==null) ch = ctx.Guild.Channels[Convert.ToUInt64(settings["escortProfileChannel"])];
-                        if (ch == null) throw new Exception($"The profile section of the settings for {ctx.Guild} has not been setup yet");
-                        var msg = await Utils.GetMessageAsync(profile);
-                        if (msg == null)
+                        if (!escorts.HasKey(member.Key) || escorts[member.Key] == null)
                         {
-                            msg = await ch.SendMessageAsync("please wait...");
+                            // profile does not exsit so we need to create one 
+                            var profile = EscortProfile.CreateProfile(ctx, member.Value);
+                            //Create the message that will hold the embed for this profile
+                            var ch = await Utils.GetChannel(ctx.Guild, Convert.ToUInt64(settings["escortProfileChannel"]));
+                            var msg = await ch.SendMessageAsync("please wait...");
+                            profile.channelID = ch.Id;
                             profile.messageID = msg.Id;
-                            profile.channelID = msg.Channel.Id;
-                            profile.serverID = ctx.Guild.Id;
+                            profile.isHead = true;
+                            profile = await EscortProfile.UpdateOrCreateProfileEmbedAsync(msg, profile);
+                            if (profile != null)
+                                escorts[member.Key] = profile;
                         }
-                        profile = await EscortProfile.UpdateOrCreateProfileEmbedAsync(msg, profile);
-                        if(profile != null)
-                            profileContainer[member.Key] = profile;
+                        else
+                        {
+                            // profile does not exsit so we need to create one 
+                            var profile = escorts[member.Key];
+                            //Get or create the message that will hold the embed for this profile
+                            var ch = await Utils.GetChannelAsync(profile);
+                            if (ch == null) ch = ctx.Guild.Channels[Convert.ToUInt64(settings["escortProfileChannel"])];
+                            if (ch == null) throw new Exception($"The profile section of the settings for {ctx.Guild} has not been setup yet");
+                            var msg = await Utils.GetMessageAsync(profile);
+                            if (msg == null)
+                            {
+                                msg = await ch.SendMessageAsync("please wait...");
+                                profile.messageID = msg.Id;
+                                profile.channelID = msg.Channel.Id;
+                                profile.serverID = ctx.Guild.Id;
+                            }
+                            profile = await EscortProfile.UpdateOrCreateProfileEmbedAsync(msg, profile);
+                            if (profile != null)
+                                escorts[member.Key] = profile;
+                        }
                     }
                 }
-
-                members = ctx.Guild.Members.ToList().FindAll(x => x.Value.Roles.Contains(Utils.GetRoleAsynce(ctx.Guild, normalEscortRole).Result));
-                foreach (var member in members)
+                if(settings.library.ContainsKey("escortDefaultRole"))
                 {
-                    if (!profileContainer.HasKey(member.Key) || profileContainer[member.Key] == null)
+                    var normalEscortRole = Convert.ToUInt64(settings["escortDefaultRole"]);
+                    var members = ctx.Guild.Members.ToList().FindAll(x => x.Value.Roles.Contains(Utils.GetRole(ctx.Guild, normalEscortRole).Result));
+                    foreach (var member in members)
                     {
-                        // profile does not exsit so we need to create one 
-                        var profile = EscortProfile.CreateProfile(ctx, member.Value);
-                        //Create the message that will hold the embed for this profile
-                        var ch = await Utils.GetChannelAsync(ctx.Guild, Convert.ToUInt64(settings["escortProfileChannel"]));
-                        var msg = await ch.SendMessageAsync("please wait...");
-                        profile.channelID = ch.Id;
-                        profile.messageID = msg.Id;
-                        profile.isHead = false;
-                        profile = await EscortProfile.UpdateOrCreateProfileEmbedAsync(msg, profile);
-                        if (profile != null)
-                            profileContainer[member.Key] = profile;
-                    }
-                    else
-                    {
-                        // profile does not exsit so we need to create one 
-                        var profile = profileContainer[member.Key];
-                        //Get or create the message that will hold the embed for this profile
-                        var ch = await Utils.GetChannelAsync(profile);
-                        if (ch == null) ch = ctx.Guild.Channels[Convert.ToUInt64(settings["escortProfileChannel"])];
-                        if (ch == null) throw new Exception($"The profile section of the settings for {ctx.Guild} has not been setup yet");
-                        var msg = await Utils.GetMessageAsync(profile);
-                        if (msg == null)
+                        if (!escorts.HasKey(member.Key) || escorts[member.Key] == null)
                         {
-                            msg = await ch.SendMessageAsync("please wait...");
+                            // profile does not exsit so we need to create one 
+                            var profile = EscortProfile.CreateProfile(ctx, member.Value);
+                            //Create the message that will hold the embed for this profile
+                            var ch = await Utils.GetChannel(ctx.Guild, Convert.ToUInt64(settings["escortProfileChannel"]));
+                            var msg = await ch.SendMessageAsync("please wait...");
+                            profile.channelID = ch.Id;
                             profile.messageID = msg.Id;
-                            profile.channelID = msg.Channel.Id;
-                            profile.serverID = ctx.Guild.Id;
+                            profile.isHead = false;
+                            profile = await EscortProfile.UpdateOrCreateProfileEmbedAsync(msg, profile);
+                            if (profile != null)
+                                escorts[member.Key] = profile;
                         }
-                        profile = await EscortProfile.UpdateOrCreateProfileEmbedAsync(msg, profile);
-                        if (profile != null)
-                            profileContainer[member.Key] = profile;
+                        else
+                        {
+                            // profile does not exsit so we need to create one 
+                            var profile = escorts[member.Key];
+                            //Get or create the message that will hold the embed for this profile
+                            var ch = await Utils.GetChannelAsync(profile);
+                            if (ch == null) ch = ctx.Guild.Channels[Convert.ToUInt64(settings["escortProfileChannel"])];
+                            if (ch == null) throw new Exception($"The profile section of the settings for {ctx.Guild} has not been setup yet");
+                            var msg = await Utils.GetMessageAsync(profile);
+                            if (msg == null)
+                            {
+                                msg = await ch.SendMessageAsync("please wait...");
+                                profile.messageID = msg.Id;
+                                profile.channelID = msg.Channel.Id;
+                                profile.serverID = ctx.Guild.Id;
+                            }
+                            profile = await EscortProfile.UpdateOrCreateProfileEmbedAsync(msg, profile);
+                            if (profile != null)
+                                escorts[member.Key] = profile;
+                        }
                     }
                 }
-                await EscortProfile.SaveAsync(ctx.Guild, profileContainer);
+                await AssetDatabase.SaveAsync(ctx.Guild, escorts);
 
 
                 var dwb = new DiscordWebhookBuilder();
@@ -201,28 +206,28 @@ namespace EscortsReady
             try
             {
                 var member = (DiscordMember)user;
-                var settings = await Settings.LoadAsync(ctx.Guild);
+                var settings = await AssetDatabase.LoadAsync<Settings>(ctx.Guild);
                 await Utils.CheckAndRemoveInvalidProfilesAsync(ctx.Guild);
-                var profileContainer = await EscortProfile.LoadAsync(ctx.Guild);
+                var escorts = await AssetDatabase.LoadAsync<Escorts>(ctx.Guild);
                 member = member != null ? member :  ctx.Member;
-                if (!profileContainer.HasKey(member.Id) || profileContainer[member.Id] == null)
+                if (!escorts.HasKey(member.Id) || escorts[member.Id] == null)
                 {
                     // profile does not exsit so we need to create one 
                     var profile = EscortProfile.CreateProfile(ctx, member);
                     //Create the message that will hold the embed for this profile
-                    var ch = await Utils.GetChannelAsync(ctx.Guild, Convert.ToUInt64(settings["escortProfileChannel"]));
+                    var ch = await Utils.GetChannel(ctx.Guild, Convert.ToUInt64(settings["escortProfileChannel"]));
                     var msg = await ch.SendMessageAsync("please wait...");
                     profile.channelID = ch.Id;
                     profile.messageID = msg.Id;
                     profile.isHead = true;
                     profile = await EscortProfile.UpdateOrCreateProfileEmbedAsync(msg, profile);
                     if (profile != null)
-                        profileContainer[member.Id] = profile;
+                        escorts[member.Id] = profile;
                 }
                 else
                 {
                     // profile does not exsit so we need to create one 
-                    var profile = profileContainer[member.Id];
+                    var profile = escorts[member.Id];
                     //Get or create the message that will hold the embed for this profile
                     var ch = await Utils.GetChannelAsync(profile);
                     if (ch == null) ch = ctx.Guild.Channels[Convert.ToUInt64(settings["escortProfileChannel"])];
@@ -237,10 +242,10 @@ namespace EscortsReady
                     }
                     profile = await EscortProfile.UpdateOrCreateProfileEmbedAsync(msg, profile);
                     if (profile != null)
-                        profileContainer[member.Id] = profile;
+                        escorts[member.Id] = profile;
                 }
 
-                await EscortProfile.SaveAsync(ctx.Guild, profileContainer);
+                await AssetDatabase.SaveAsync(ctx.Guild, escorts);
 
 
                 var dwb = new DiscordWebhookBuilder();

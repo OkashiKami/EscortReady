@@ -1,20 +1,18 @@
 {
   "dependencies": {
-    "storage1": {
-      "type": "storage",
-      "connectionId": "EscortReadyStorage"
-    },
     "appConfig1": {
       "type": "appConfig",
-      "connectionId": "EscortReadyAppConfig"
+      "connectionId": "AppConfig",
+      "dynamicId": null
     },
-    "compute.appService1": {
-      "group": "connections",
-      "type": "compute.appService"
+    "storage1": {
+      "type": "storage",
+      "connectionId": "StorageConfig",
+      "dynamicId": null
     },
     "secrets1": {
       "type": "secrets",
-      "connectionId": "EscortReadyKeyVault"
+      "connectionId": "VaultUri"
     }
   }
 }

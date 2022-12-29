@@ -1,5 +1,3 @@
-
-using Azure.Core.Diagnostics;
 using Azure.Identity;
 using EscortsReady.Utilities;
 using Microsoft.AspNetCore.Authentication;
@@ -7,20 +5,17 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.Azure;
-using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using HttpMethod = System.Net.Http.HttpMethod;
 
 namespace EscortsReady
 {
     public class Program
     {
         public static CancellationToken ct;
-        private static WebApplicationBuilder builder;
         public static ConfigurationManager configuration { get; private set; }
         public static WebApplication app { get; private set; }
         public static ILogger logger { get; private set; }
@@ -28,42 +23,17 @@ namespace EscortsReady
         public static async Task Main(params string[] args)
         {
             Console.Title = "EscortReady";
-            
             Directory.CreateDirectory(Utils.tmpDire);
             Directory.GetFiles(Utils.tmpDire).ToList().ForEach(f => File.Delete(f));
             Directory.Delete(Utils.tmpDire, true);
             Directory.CreateDirectory(Utils.tmpDire);
-            
 
-            await SetupWebServer(args);
-            Task.Run(async () => await DiscordService.StartAsync(logger)).GetAwaiter();
-            await Task.Delay(TimeSpan.FromSeconds(3));
-            await app.RunAsync(ct);
-            ct = new CancellationToken(true);
-        }
-
-        private static async Task SetupWebServer(params string[] args)
-        {
-            builder = WebApplication.CreateBuilder(args);
+            var builder = WebApplication.CreateBuilder(args);
             configuration = builder.Configuration;
 
             var keyVaultEndpoint = new Uri(configuration.GetValue<string>("Endpoints:EscortReadyKeyVault"));
             var azureAppConfigurationEnpoint = configuration.GetValue<string>("Endpoints:EscortReadyAppConfig");
             var storageConnectionString = configuration.GetValue<string>("Endpoints:EscortReadyStorage");
-
-
-            // Setup a listener to monitor logged events.
-            using AzureEventSourceListener listener = AzureEventSourceListener.CreateConsoleLogger();
-            DefaultAzureCredentialOptions options = new DefaultAzureCredentialOptions()
-            {
-                Diagnostics =
-                {
-                    LoggedHeaderNames = { "x-ms-request-id" },
-                    LoggedQueryParameters = { "api-version" },
-                    IsLoggingContentEnabled = true
-                }
-            };
-
 
             try { configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential()); } catch { }
             // Add Azure App Configuration to the container.
@@ -96,8 +66,7 @@ namespace EscortsReady
                 });
             }
             builder.Services.AddAzureAppConfiguration();
-            // Add services to the container.
-            builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
             builder.Services.AddControllers();
             // Add services to the container.
             builder.Services.AddAzureClients(clientBuilder =>
@@ -155,10 +124,10 @@ namespace EscortsReady
                 };
 
             });
-            builder.Services.AddFeatureManagement();
             await Storage.Setup(storageConnectionString);
-            app = builder.Build();
-            logger = app.Logger;
+            // Add services to the container.
+            builder.Services.AddControllersWithViews();
+            var app = builder.Build();
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -166,23 +135,17 @@ namespace EscortsReady
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            
             app.UseRouting();
             app.UseAuthorization();
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            Task.Run(async () => await DiscordService.StartAsync(logger)).GetAwaiter();
+            await Task.Delay(TimeSpan.FromSeconds(3));
+            await app.RunAsync(ct);
+            ct = new CancellationToken(true);
         }
     }
 }
-
-
-
-
-
-
-
-
-

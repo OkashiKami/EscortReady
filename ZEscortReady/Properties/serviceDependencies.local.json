@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "storage1": {
+      "secretStore": null,
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/okashitechstorage",
+      "type": "storage.azure",
+      "connectionId": "EscortReadyStorage"
+    },
+    "appConfig1": {
+      "secretStore": null,
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.AppConfiguration/configurationStores/okashitechappconfig",
+      "type": "appConfig.azure",
+      "connectionId": "EscortReadyAppConfig"
+    },
+    "compute.appService1": {
+      "group": "connections",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/EscortsReadyService",
+      "type": "compute.appService.windows"
+    },
+    "secrets1": {
+      "secretStore": null,
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/OkashiTechVault",
+      "type": "secrets.keyVault",
+      "connectionId": "EscortReadyKeyVault"
+    }
+  }
+}

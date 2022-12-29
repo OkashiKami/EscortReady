@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "storage1": {
+      "type": "storage",
+      "connectionId": "EscortReadyStorage"
+    },
+    "appConfig1": {
+      "type": "appConfig",
+      "connectionId": "EscortReadyAppConfig"
+    },
+    "compute.appService1": {
+      "group": "connections",
+      "type": "compute.appService"
+    },
+    "secrets1": {
+      "type": "secrets",
+      "connectionId": "EscortReadyKeyVault"
+    }
+  }
+}

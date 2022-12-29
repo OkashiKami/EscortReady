@@ -4,13 +4,9 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus;
-using System.Diagnostics;
-using System.Security.Principal;
 using VRChat.API.Model;
 using DSharpPlus.Interactivity.Extensions;
-using EscortsReady;
 using EscortReady;
-using System.Diagnostics.Metrics;
 
 namespace EscortsReady.VRC
 {

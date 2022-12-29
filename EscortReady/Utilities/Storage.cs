@@ -20,7 +20,7 @@ namespace EscortsReady.Utilities
         public static async Task UploadFileAsync(string filename, DiscordGuild? guild = null)
         {
             var info = new FileInfo(filename);
-            var root = guild != null ? Path.Combine("EscortReady", $"{guild.Name}_{guild.Id}", info.Name) : Path.Combine("EscortReady", "Resources",  info.Name);
+            var root = guild != null ? Path.Combine("EscortsReady", $"{guild.Name}_{guild.Id}", info.Name) : Path.Combine("EscortsReady", "Resources",  info.Name);
             filename = string.Join("", filename.ToCharArray().Where(x => x < 127));
             // Convert object;
             var blobClient = container.GetBlobClient(root);
@@ -33,7 +33,7 @@ namespace EscortsReady.Utilities
         public static string? GetFileUrl(string filename, DiscordGuild? guild = null)
         {
             var info = new FileInfo(filename);
-            var root = guild != null ? Path.Combine("EscortReady", $"{guild.Name}_{guild.Id}", info.Name) : Path.Combine("EscortReady", "Resources", info.Name);
+            var root = guild != null ? Path.Combine("EscortsReady", $"{guild.Name}_{guild.Id}", info.Name) : Path.Combine("EscortsReady", "Resources", info.Name);
             filename = string.Join("", filename.ToCharArray().Where(x => x < 127));
             var blobs = container.GetBlobs().ToList();
             var file = blobs.Count > 0 ? blobs.Find(x => string.Equals(x.Name, root.Replace("\\", "/"), StringComparison.OrdinalIgnoreCase)) : null;
@@ -45,10 +45,13 @@ namespace EscortsReady.Utilities
         public static Stream? GetFileStream(string filename, DiscordGuild? guild = null)
         {
             var info = new FileInfo(filename);
-            var root = guild != null ? Path.Combine("EscortReady", $"{guild.Name}_{guild.Id}", info.Name) : Path.Combine("EscortReady", "Resources", info.Name);
+            var root = guild != null ? 
+                Path.Combine("EscortsReady", $"{guild.Name}_{guild.Id}", info.Name) :
+                Path.Combine("EscortsReady", "Resources", info.Name);
             filename = string.Join("", filename.ToCharArray().Where(x => x < 127));
             var blobs = container.GetBlobs().ToList();
-            var file = blobs.Count > 0 ? blobs.Find(x => string.Equals(x.Name, root.Replace("\\", "/"), StringComparison.OrdinalIgnoreCase)) : null;
+            var newName = root.Replace("\\", "/");
+            var file = blobs.Count > 0 ? blobs.Find(x => string.Equals(x.Name, newName, StringComparison.OrdinalIgnoreCase)) : null;
             if (file != null)
             {
                 var blobClient = container.GetBlobClient(file.Name);

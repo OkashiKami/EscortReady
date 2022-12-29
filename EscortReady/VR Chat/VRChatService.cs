@@ -13,7 +13,7 @@ using EscortsReady;
 using File = System.IO.File;
 using Avatar = EscortsReady.Avatar;
 using HttpMethod = System.Net.Http.HttpMethod;
-using EscortReady;
+using EscortsReady;
 
 namespace EscortsReady.VRC
 {

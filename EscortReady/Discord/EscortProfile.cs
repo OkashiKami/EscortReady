@@ -3,7 +3,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
-using EscortReady;
+using EscortsReady;
 using EscortsReady.Utilities;
 
 namespace EscortsReady

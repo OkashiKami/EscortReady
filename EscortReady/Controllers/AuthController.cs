@@ -52,7 +52,7 @@ namespace EscortsReady.Controllers
 
 
         
-        [HttpGet("MyGuildsAsync")]
+        [HttpGet("MyGuilds")]
         public object Guilds()  
         {
             return new

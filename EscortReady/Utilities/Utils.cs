@@ -1,6 +1,6 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using EscortReady;
+using EscortsReady;
 using EscortsReady.Utilities;
 using EscortsReady.VRC;
 using Newtonsoft.Json;

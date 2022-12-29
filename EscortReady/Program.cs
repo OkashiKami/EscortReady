@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -22,7 +23,7 @@ namespace EscortsReady
 
         public static async Task Main(params string[] args)
         {
-            Console.Title = "EscortReady";
+            Console.Title = "EscortsReady";
             Directory.CreateDirectory(Utils.tmpDire);
             Directory.GetFiles(Utils.tmpDire).ToList().ForEach(f => File.Delete(f));
             Directory.Delete(Utils.tmpDire, true);
@@ -141,6 +142,8 @@ namespace EscortsReady
             app.UseRouting();
             app.UseAuthorization();
             app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+            logger = app.Logger;
+
 
             Task.Run(async () => await DiscordService.StartAsync(logger)).GetAwaiter();
             await Task.Delay(TimeSpan.FromSeconds(3));

@@ -4,7 +4,7 @@ using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.Entities;
 using EscortsReady.VRC;
-using EscortReady;
+using EscortsReady;
 
 namespace EscortsReady
 {
@@ -39,7 +39,6 @@ namespace EscortsReady
         private async Task InitializeAsync()
         {
         retry:
-            Console.Title = "EscortReady";
             // Init the bot first
             try
             {
@@ -132,6 +131,7 @@ namespace EscortsReady
                 Program.ct.Register(() => Logger.LogInformation($"{GetType().Name} is stopping."));
                 await Client.ConnectAsync();
                 Logger.LogInformation($"{GetType().Name} has connected, and is now Ready.");
+                Console.WriteLine($"Discord Bot Ready!");
                 await Task.Delay(-1, Program.ct);
                 Dispose();
                 Logger.LogInformation("DiscordService has stopped.");                

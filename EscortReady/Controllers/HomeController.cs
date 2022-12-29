@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using EscortsReady.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
-using EscortsReady.Models;
-using EscortReady;
 
 namespace EscortsReady.Controllers
 {
@@ -64,27 +63,14 @@ namespace EscortsReady.Controllers
         [HttpGet]
         public async Task<IActionResult> DashboardAddUserEntry()
         {
-            var settings = await  AssetDatabase.LoadAsync<Settings>(Session.CurrentGuild.source);
-            if (settings != null)
-            {
-                var ue = (List<DUser>)settings["UserEntries"];
-                    ue.Add(new DUser());
-                await AssetDatabase.SaveAsync(Session.CurrentGuild.source, settings);
-            }
-            return Redirect("/Home/Dashboard");
-        }
-        [HttpGet]
-        public async Task<IActionResult> DashboardRemoveUserEntry(string id)
-        {
             var settings = await AssetDatabase.LoadAsync<Settings>(Session.CurrentGuild.source);
-            if (settings != null)
-            {
-                var ue = (List<DUser>)settings["UserEntries"];
-                ue.RemoveAt(int.Parse(id));
-                await AssetDatabase.SaveAsync(Session.CurrentGuild.source, settings);
-            }
+            var ue = (List<DUser>)settings["UserEntries"];
+            ue.Add(new DUser());
+            settings["UserEntries"] = ue;
+            await AssetDatabase.SaveAsync(Session.CurrentGuild.source, settings);
             return Redirect("/Home/Dashboard");
         }
+
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

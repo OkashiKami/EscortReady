@@ -1,6 +1,6 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using EscortReady;
+using EscortsReady;
 
 namespace EscortsReady
 {

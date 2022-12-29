@@ -4,7 +4,7 @@ using EscortsReady.Utilities;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace EscortReady
+namespace EscortsReady
 {
     public class AssetDatabase : FileData
     {

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using System.Text;
 using EscortsReady.Utilities;
-using EscortReady;
+using EscortsReady;
 
 namespace EscortsReady
 {

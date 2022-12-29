@@ -6,7 +6,7 @@ using DSharpPlus.SlashCommands;
 using DSharpPlus;
 using VRChat.API.Model;
 using DSharpPlus.Interactivity.Extensions;
-using EscortReady;
+using EscortsReady;
 
 namespace EscortsReady.VRC
 {

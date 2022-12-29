@@ -1,22 +1,73 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+}
+
+.guildEntry {
+    border: 2px solid purple;
+    width: 250px;
+    height: 250px;
+    border-radius: 5%;
+    text-decoration: none;
+    display: block;
+    position: relative;
+    margin: 5px;
+    background: linear-gradient(to bottom, #000, #333);
+}
+.guildEntry .btn h3 {
+    height: 40px;
+    font-size: 15px;
+    width: 100%;
+    color: white;
+    display: block;
+    padding: 5px;
+}
+.guildEntry .btn img {
+    border-radius: 100%;
+}
+
+.guildEntry-selected {
+    border: 3px solid green;
+    width: 350px;
+    height: 65px;
+    border-radius: 5%;
+    text-decoration: none;
+    display: block;
+    position: relative;
+    margin: 5px;
+    background: linear-gradient(to bottom, #000, #333);
+}
+.guildEntry-selected .btn img {
+    border-radius: 100%;
+    width: 30px;
+    height: 30px;
+    float: left;
+}
+.guildEntry-selected .btn h3 {
+    font-size: 20px;
+    width: 100%;
+    height: 25px;
+    color: white;
+    display: block;    
+}
+.guildEntry-selected .btn p {
+    font-size: 10px;
+    width: 100%;
+    height: 10px;    
+    color: white;
+    display: block;    
 }

@@ -7,7 +7,7 @@ env:
   AZURE_WEBAPP_NAME: EscortsReadyService
   AZURE_WEBAPP_PACKAGE_PATH: EscortReady\published
   CONFIGURATION: Release
-  DOTNET_CORE_VERSION: 6.0.x
+  DOTNET_CORE_VERSION: 7.0.x
   WORKING_DIRECTORY: EscortReady
 jobs:
   build:
